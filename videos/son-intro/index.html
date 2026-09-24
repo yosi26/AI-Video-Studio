@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="he">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Heebo"; font-weight: 700; src: url("assets/fonts/heebo-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Heebo"; font-weight: 700; src: url("assets/fonts/heebo-hebrew-700-normal.woff2") format("woff2"); unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      #root { width: 100%; height: 100%; position: relative; background: #000; font-family: "Heebo", sans-serif; }
+      .photo-wrap { position: absolute; inset: 0; overflow: hidden; }
+      #photo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 48% 42%; }
+      .vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.45) 100%); }
+      .sub-wrap { position: absolute; left: 0; right: 120px; bottom: 60px; display: flex; justify-content: flex-start; direction: rtl; }
+      #sub { font-size: 76px; font-weight: 700; color: #fff; padding: 18px 48px; border-radius: 20px; background: rgba(0, 0, 0, 0.55); text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
+      #sub span { opacity: 0.35; }
+      #fade { position: absolute; inset: 0; background: #000; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="5" data-width="1920" data-height="1080">
+      <audio id="voice" src="assets/audio/voice.mp3" data-start="1" data-duration="2.35" data-track-index="3" data-volume="1"></audio>
+
+      <div id="scene" class="clip photo-wrap" data-start="0" data-duration="5" data-track-index="0">
+        <img id="photo" src="assets/images/father.jpg" alt="Father holding his sleeping baby" />
+        <div class="vignette"></div>
+      </div>
+
+      <div id="caption" class="clip sub-wrap" data-start="0.9" data-duration="3.6" data-track-index="1">
+        <div id="sub"><span id="w1">שלום,</span> <span id="w2">זה</span> <span id="w3">הבן</span> <span id="w4">שלי</span></div>
+      </div>
+
+      <div id="fader" class="clip" data-start="0" data-duration="5" data-track-index="2">
+        <div id="fade"></div>
+      </div>
+    </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      // Fade from black, slow push-in toward the faces, fade out
+      tl.fromTo("#fade", { opacity: 1 }, { opacity: 0, duration: 0.7, ease: "power1.out" }, 0);
+      tl.fromTo("#photo", { scale: 1.0 }, { scale: 1.12, duration: 5, ease: "sine.inOut" }, 0);
+      tl.to("#fade", { opacity: 1, duration: 0.5, ease: "power1.in" }, 4.5);
+      // Caption: box rises in, words light up with the voice (voice runs 1.0s → 3.4s)
+      tl.fromTo("#sub", { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, 0.9);
+      tl.to("#w1", { opacity: 1, duration: 0.15 }, 1.05);
+      tl.to("#w2", { opacity: 1, duration: 0.15 }, 1.9);
+      tl.to("#w3", { opacity: 1, duration: 0.15 }, 2.25);
+      tl.to("#w4", { opacity: 1, duration: 0.15 }, 2.75);
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
