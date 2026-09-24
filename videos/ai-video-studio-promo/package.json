@@ -1,0 +1,16 @@
+{
+  "name": "ai-video-studio-promo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.8.72 preview",
+    "check": "npx --yes hyperframes@0.8.72 check",
+    "render": "npx --yes hyperframes@0.8.72 render",
+    "publish": "npx --yes hyperframes@0.8.72 publish"
+  },
+  "dependencies": {
+    "@fontsource/heebo": "^5.3.0",
+    "@fontsource/rubik": "^5.3.0",
+    "gsap": "^3.14.2"
+  }
+}
