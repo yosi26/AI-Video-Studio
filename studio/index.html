@@ -1,0 +1,465 @@
+<title>סטודיו וידאו מאוחד</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#ECEEF1; --surface:#FFFFFF; --sunk:#E2E5EA; --ink:#14171C; --muted:#5A6371; --line:#CDD2DA;
+  --tally:#D11F3A; --tally-ink:#FFFFFF; --ok:#1E7F4F; --warn:#A5620B; --bad:#B3261E;
+  --display:"Karantina","Assistant",system-ui,sans-serif;
+  --body:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0E1013; --surface:#171A1F; --sunk:#111317; --ink:#E7E9EC; --muted:#98A1AE; --line:#2A2F37;
+    --tally:#FF4A5F; --tally-ink:#16070A; --ok:#4CC38A; --warn:#E3A13B; --bad:#FF6B61;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0E1013; --surface:#171A1F; --sunk:#111317; --ink:#E7E9EC; --muted:#98A1AE; --line:#2A2F37;
+  --tally:#FF4A5F; --tally-ink:#16070A; --ok:#4CC38A; --warn:#E3A13B; --bad:#FF6B61;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding:24px 16px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,8vw,76px);line-height:.9;margin:0;letter-spacing:.01em;text-wrap:balance}
+h1 .rec{display:inline-block;width:.28em;height:.28em;border-radius:50%;background:var(--tally);vertical-align:.18em;margin-inline-start:.18em;animation:blink 1.6s steps(2,start) infinite}
+@keyframes blink{to{visibility:hidden}}
+@media (prefers-reduced-motion:reduce){h1 .rec{animation:none}}
+.tc{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr}
+.lede{margin:6px 0 0;color:var(--muted);max-width:60ch}
+h2{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:0 0 12px;letter-spacing:.02em}
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+
+/* slate */
+.slate{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.slate-bar{height:18px;background:repeating-linear-gradient(-45deg,var(--ink) 0 14px,var(--surface) 14px 28px)}
+.slate-body{padding:18px;display:grid;gap:16px}
+textarea,select,input[type=url],input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
+textarea{min-height:120px;resize:vertical}
+:focus-visible{outline:2px solid var(--tally);outline-offset:2px}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:420px){.row3{grid-template-columns:1fr 1fr}}
+.field{display:grid;gap:6px}
+.seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-family:var(--mono);font-size:13px;padding:8px 4px;border:0;background:var(--sunk);color:var(--ink);cursor:pointer;direction:ltr}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+
+.channels{display:grid;gap:8px}
+.ch{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sunk)}
+.ch input[type=checkbox]{width:18px;height:18px;accent-color:var(--tally)}
+.ch .nm{font-weight:700;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.ch .nm small{font-weight:400;color:var(--muted);font-size:13px}
+.ch select{grid-column:2;padding:6px 8px;font-size:14px;font-family:var(--mono);direction:ltr;text-align:left}
+.ch[data-off="true"]{opacity:.55}
+.ch .conn{font-size:12px;font-family:var(--mono)}
+
+.roll{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;border-radius:4px;padding:11px 18px;cursor:pointer;border:1px solid var(--ink);background:transparent;color:var(--ink)}
+.btn.primary{background:var(--tally);border-color:var(--tally);color:var(--tally-ink);font-size:17px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.confirm{border:1px dashed var(--tally);border-radius:4px;padding:12px;display:grid;gap:10px}
+.note{font-size:14px;color:var(--muted)}
+
+/* board */
+.board{display:grid;gap:12px}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:28px;color:var(--muted);text-align:center}
+.take{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:10px}
+.take-h{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
+.take-h .who{font-weight:700}
+.take-h .meta{font-family:var(--mono);font-size:12px;color:var(--muted);direction:ltr}
+.chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.chip.run{color:var(--warn)} .chip.ok{color:var(--ok)} .chip.bad{color:var(--bad)}
+.take p.pr{margin:0;color:var(--muted);font-size:14px}
+.take video{width:100%;max-width:100%;border-radius:4px;background:#000;display:block}
+.take .err{color:var(--bad);font-size:14px}
+.take .links{display:flex;gap:12px;flex-wrap:wrap;font-size:14px}
+.take a{color:var(--tally)}
+details.raw summary{cursor:pointer;font-size:13px;color:var(--muted)}
+details.raw pre{font-family:var(--mono);font-size:12px;background:var(--sunk);padding:10px;border-radius:4px;overflow-x:auto;max-height:260px;direction:ltr;text-align:left}
+
+.cutroom{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:grid;gap:12px}
+.inline{display:flex;gap:10px;flex-wrap:wrap}
+.inline input{flex:1 1 240px}
+.banner{border-inline-start:4px solid var(--warn);background:var(--surface);padding:10px 14px;border-radius:4px;font-size:14px}
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header class="top">
+    <div>
+      <h1>סטודיו וידאו<span class="rec" aria-hidden="true"></span></h1>
+      <p class="lede">כתבו פרומפט אחד ושלחו אותו לכל שירותי הווידאו שמחוברים לחשבון Claude שלכם. כל שירות מחזיר טייק משלו, ואפשר להשוות ביניהם זה לצד זה.</p>
+    </div>
+    <div class="tc" id="tc">TC 00:00:00:00</div>
+  </header>
+
+  <div class="banner" id="nomcp" hidden>הדף לא מצליח להתחבר לקונקטורים. פתחו אותו מתוך claude.ai כשאתם מחוברים לחשבון, ובדקו שהקונקטורים מחוברים בהגדרות ← Connectors.</div>
+
+  <div class="grid">
+    <section aria-labelledby="slate-h">
+      <div class="slate">
+        <div class="slate-bar" aria-hidden="true"></div>
+        <div class="slate-body">
+          <h2 id="slate-h">קלאפר</h2>
+          <div class="field">
+            <label class="label" for="prompt">סצנה / פרומפט</label>
+            <textarea id="prompt">A lone lighthouse keeper climbs a spiral staircase at dusk, warm lantern light flickering on stone walls, slow dolly up, cinematic 35mm film grain, waves crashing outside the window.</textarea>
+            <span class="note">מודלים כמו Seedance לא מבינים עברית. כתבו באנגלית לתוצאה הטובה ביותר.</span>
+          </div>
+          <div class="row3">
+            <div class="field"><span class="label">יחס מסך</span>
+              <div class="seg" id="seg-ar" role="group" aria-label="יחס מסך">
+                <button type="button" data-v="16:9" aria-pressed="true">16:9</button>
+                <button type="button" data-v="9:16" aria-pressed="false">9:16</button>
+                <button type="button" data-v="1:1" aria-pressed="false">1:1</button>
+              </div>
+            </div>
+            <div class="field"><span class="label">אורך</span>
+              <div class="seg" id="seg-dur" role="group" aria-label="אורך בשניות">
+                <button type="button" data-v="5" aria-pressed="true">5s</button>
+                <button type="button" data-v="10" aria-pressed="false">10s</button>
+              </div>
+            </div>
+            <div class="field"><span class="label">רזולוציה</span>
+              <div class="seg" id="seg-res" role="group" aria-label="רזולוציה">
+                <button type="button" data-v="480p" aria-pressed="true">480p</button>
+                <button type="button" data-v="720p" aria-pressed="false">720p</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field">
+            <span class="label">ערוצים</span>
+            <div class="channels" id="channels"></div>
+          </div>
+
+          <div class="roll">
+            <button class="btn primary" id="roll" type="button">צילום! שלח לערוצים</button>
+            <span class="note" id="roll-note"></span>
+          </div>
+          <div class="confirm" id="confirm" hidden>
+            <div id="confirm-text"></div>
+            <div class="roll">
+              <button class="btn primary" id="confirm-yes" type="button">כן, להפיק</button>
+              <button class="btn" id="confirm-no" type="button">ביטול</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section aria-labelledby="board-h">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
+        <h2 id="board-h">טייקים</h2>
+        <button class="btn" id="clear" type="button" style="padding:6px 12px;font-size:14px">ניקוי הלוח</button>
+      </div>
+      <div class="board" id="board"></div>
+    </section>
+  </div>
+
+  <section class="cutroom" aria-labelledby="cut-h">
+    <h2 id="cut-h">חדר עריכה · OpusClip</h2>
+    <p class="note" style="margin:0">הדביקו קישור לסרטון ארוך (YouTube, Drive, Vimeo או כל קובץ mp4 ציבורי). OpusClip יחתוך ממנו קליפים קצרים לרשתות. אפשר גם להדביק קישור לטייק מהלוח. דורש מנוי Pro ומעלה ב־OpusClip.</p>
+    <div class="inline">
+      <input type="url" id="opus-url" placeholder="https://www.youtube.com/watch?v=..." dir="ltr">
+      <select id="opus-ar" style="flex:0 0 160px" aria-label="יחס מסך לקליפים">
+        <option value="portrait">9:16 אנכי</option>
+        <option value="square">1:1 ריבוע</option>
+        <option value="landscape">16:9 רוחבי</option>
+      </select>
+      <button class="btn" id="opus-go" type="button">שלח ל־OpusClip</button>
+    </div>
+    <div id="opus-out" class="note"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $ = s => document.querySelector(s);
+
+/* ---------- services ---------- */
+const SERVICES = [
+  { key:"kolbo", server:"Kolbo", name:"Kolbo", blurb:"יותר מ־50 מודלים",
+    models:[["seedance-2-mini","Seedance 2.0 Mini"],["seedance-2-5","Seedance 2.5"],["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["kling-video/v2.6/pro/text-to-video","Kling 2.6 Pro"],["veo3.1/lite","Veo 3.1 Lite"],["gemini-omni-flash-1.1","Gemini Omni Flash 1.1 (עברית)"]],
+    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration:o.dur, resolution:o.res}}),
+    poll:(id)=>({tool:"get_generation_status", input:{generation_id:id, wait:true}}),
+    idKeys:["generation_id","generationId","id"] },
+  { key:"hedra", server:"hedra", name:"Hedra", blurb:"אווטרים ומודלי קולנוע",
+    models:[["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["seedance-25","Seedance 2.5"],["kling-25-turbo","Kling 2.5 Turbo"],["veo-31","Veo 3.1"],["wan-3-0","Wan 3.0"]],
+    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration_ms:o.dur*1000, resolution:o.res}}),
+    poll:(id)=>({tool:"get_generations", input:{job_ids:[id], wait_seconds:20}}),
+    idKeys:["job_id","jobId","id","generation_id"] },
+  { key:"krea", server:"yosi", name:"Krea", blurb:"Seedance, Veo, Kling ועוד",
+    models:[["bytedance/seedance-2-5","Seedance 2.5"],["bytedance/seedance-2-mini","Seedance 2.0 Mini"],["kling/kling-3.0","Kling 3.0"],["google/veo-3.1-fast","Veo 3.1 Fast"],["minimax/h3-max-turbo","MiniMax H3 Max Turbo"]],
+    submit:(o)=>{
+      const input = {prompt:o.prompt, aspect_ratio:o.ar};
+      if (o.model==="bytedance/seedance-2-5"){ input.duration=o.dur; input.resolution=o.res; }
+      return {tool:"generate_video", input:{model:o.model, input}};
+    },
+    poll:(id)=>({tool:"get_job", input:{jobId:id}}),
+    idKeys:["job_id","jobId","id"] },
+  { key:"openart", server:"openart", name:"OpenArt", blurb:"PixVerse, Seedance, Veo",
+    models:[["pixverseV6","PixVerse V6"],["fal-h3-max-turbo","MiniMax H3 Max Turbo"],["wan3-0","Wan 3.0"],["byte-plus-seedance-2-mini","Seedance 2.0 Mini"]],
+    submit:(o)=>{
+      const params = {prompt:o.prompt};
+      if (o.model==="pixverseV6"){ params.duration=o.dur; params.aspectRatio=o.ar; params.resolution=o.res==="480p"?"540p":o.res; }
+      return {tool:"openart_generate_video", input:{model:o.model, mode:"text2video", params}};
+    },
+    poll:(id)=>({tool:"openart_creation_get", input:{historyId:id}}),
+    idKeys:["historyId","history_id","id"] },
+  { key:"bp", server:"BudgetPixel", name:"BudgetPixel", blurb:"Seedance ו־Wan במחיר נמוך",
+    models:[["seedance-2.0-mini","SeeDance 2.0 Mini"],["wan-3.0-video","Wan 3.0"],["seedance-2.5","SeeDance 2.5"],["minimax-h3-max","MiniMax H3 Max"]],
+    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration_seconds:o.dur, resolution:o.res}}),
+    poll:(id)=>({tool:"check_generation_status", input:{job_id:id, type:"video"}}),
+    idKeys:["job_id","jobId","id"] }
+];
+
+/* ---------- state ---------- */
+const store = {
+  get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
+  set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
+};
+const opts = { ar:"16:9", dur:5, res:"480p" };
+const picks = store.get("studio.picks", {});
+let takes = store.get("studio.takes", []);
+let mcp = null;
+const serverStatus = {};
+
+/* ---------- timecode ---------- */
+const t0 = Date.now();
+setInterval(()=>{
+  const ms = Date.now()-t0, f=Math.floor((ms%1000)/40), s=Math.floor(ms/1000);
+  const p=n=>String(n).padStart(2,"0");
+  $("#tc").textContent = `TC ${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(f)}`;
+}, 200);
+
+/* ---------- segmented controls ---------- */
+function seg(id, key, cast){
+  $(id).addEventListener("click", e=>{
+    const b = e.target.closest("button"); if(!b) return;
+    [...$(id).children].forEach(x=>x.setAttribute("aria-pressed", x===b?"true":"false"));
+    opts[key] = cast ? cast(b.dataset.v) : b.dataset.v;
+  });
+}
+seg("#seg-ar","ar"); seg("#seg-dur","dur",Number); seg("#seg-res","res");
+
+/* ---------- channels ---------- */
+function renderChannels(){
+  const box = $("#channels"); box.textContent = "";
+  SERVICES.forEach(s=>{
+    const p = picks[s.key] || {on: s.key!=="openart", model: s.models[0][0]};
+    picks[s.key] = p;
+    const el = document.createElement("div"); el.className="ch"; el.dataset.off = String(!p.on);
+    const cb = document.createElement("input"); cb.type="checkbox"; cb.id="ch-"+s.key; cb.checked=p.on;
+    const lab = document.createElement("label"); lab.className="nm"; lab.htmlFor=cb.id;
+    lab.append(s.name);
+    const sm = document.createElement("small"); sm.textContent = s.blurb; lab.append(sm);
+    const st = document.createElement("small"); st.className="conn"; st.textContent = serverStatus[s.server]||""; lab.append(st);
+    const sel = document.createElement("select"); sel.id="model-"+s.key; sel.setAttribute("aria-label","מודל עבור "+s.name);
+    s.models.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; if(v===p.model) o.selected=true; sel.append(o); });
+    cb.addEventListener("change",()=>{ p.on=cb.checked; el.dataset.off=String(!p.on); store.set("studio.picks",picks); updateNote(); });
+    sel.addEventListener("change",()=>{ p.model=sel.value; store.set("studio.picks",picks); });
+    el.append(cb, lab, document.createElement("span"), sel);
+    box.append(el);
+  });
+  updateNote();
+}
+function selected(){ return SERVICES.filter(s=>picks[s.key]&&picks[s.key].on); }
+function updateNote(){
+  const n = selected().length;
+  $("#roll-note").textContent = n ? `${n} ערוצים נבחרו` : "בחרו לפחות ערוץ אחד";
+  $("#roll").disabled = !n;
+}
+
+/* ---------- result parsing (shapes differ per connector) ---------- */
+function walk(obj, fn, depth=0){
+  if (depth>8 || obj==null) return;
+  if (Array.isArray(obj)) { obj.forEach(v=>walk(v,fn,depth+1)); return; }
+  if (typeof obj==="object") { for (const [k,v] of Object.entries(obj)) { fn(k,v); walk(v,fn,depth+1); } }
+}
+function parsePayload(res){
+  if (!res) return null;
+  if (res.payload!==undefined) return res.payload;
+  const t = (res.content||[]).find(c=>c.type==="text");
+  if (t){ try{ return JSON.parse(t.text); }catch(e){ return t.text; } }
+  return res;
+}
+function findId(p, keys){
+  if (typeof p==="string"){ const m=p.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i); return m?m[0]:null; }
+  for (const k of keys){ let hit=null; walk(p,(kk,v)=>{ if(hit==null && kk===k && (typeof v==="string"||typeof v==="number")) hit=String(v); }); if(hit) return hit; }
+  return null;
+}
+const VID_RE = /https?:\/\/[^\s"'<>)]+?\.(?:mp4|webm|mov|m3u8)(?:\?[^\s"'<>)]*)?/i;
+function findVideo(p){
+  const s = typeof p==="string" ? p : JSON.stringify(p);
+  const m = s && s.match(VID_RE); return m ? m[0] : null;
+}
+function findLink(p){
+  let hit=null;
+  walk(p,(k,v)=>{ if(!hit && typeof v==="string" && /^https?:\/\//.test(v) && /(url|link|watch|share|output|video)/i.test(k)) hit=v; });
+  return hit;
+}
+function findStatus(p){
+  let st=null;
+  walk(p,(k,v)=>{ if(!st && /^(status|state)$/i.test(k) && typeof v==="string") st=v; });
+  if (!st && typeof p==="string"){ const m=p.match(/\b(completed|failed|succeeded|processing|pending|queued|running)\b/i); if(m) st=m[1]; }
+  return st ? st.toLowerCase() : null;
+}
+const DONE = /^(completed|complete|succeeded|success|done|finished)$/;
+const FAIL = /^(failed|failure|error|cancelled|canceled|rejected)$/;
+
+/* ---------- errors ---------- */
+function errText(e, server){
+  const c = e && e.code;
+  switch(c){
+    case "server_not_connected": return `${server} לא מחובר לחשבון. הוסיפו אותו בהגדרות claude.ai ← Connectors.`;
+    case "needs_reauth": return `פג תוקף ההתחברות ל־${server}. התחברו מחדש בהגדרות claude.ai ← Connectors.`;
+    case "selection_required": return `יש יותר מקונקטור אחד בשם ${server}. בחרו אחד בחלון ש־Claude פתח.`;
+    case "not_in_manifest": return `לא אישרתם לדף הזה להשתמש ב־${server}. אפשר לאשר בטעינה הבאה.`;
+    case "blocked_by_policy": case "approval_required": return `מדיניות הארגון חוסמת את ${server} בדף הזה.`;
+    case "server_unavailable": return `${server} לא ענה. ייתכן שהבקשה בכל זאת נקלטה, אז בדקו בשירות עצמו לפני שתשלחו שוב.`;
+    case "tool_error": return `${server} דחה את הבקשה: ${e.message||""}`;
+    case "not_granted": case "capability_disabled": case "capability_removed": return "הקונקטורים לא זמינים בתצוגה הזו.";
+    default: return `שגיאה מ־${server}: ${(e&&e.message)||c||"לא ידועה"}`;
+  }
+}
+
+/* ---------- board ---------- */
+function saveTakes(){ store.set("studio.takes", takes.slice(0,40)); }
+function renderBoard(){
+  const b = $("#board"); b.textContent="";
+  if (!takes.length){
+    const e=document.createElement("div"); e.className="empty";
+    e.textContent="עדיין אין טייקים. כתבו פרומפט, בחרו ערוצים ולחצו על צילום. כל ערוץ יופיע כאן עם הסטטוס שלו, ואחר כך עם הסרטון.";
+    b.append(e); return;
+  }
+  takes.forEach(t=>{
+    const el=document.createElement("article"); el.className="take";
+    const h=document.createElement("div"); h.className="take-h";
+    const who=document.createElement("span"); who.className="who"; who.textContent=t.service;
+    const meta=document.createElement("span"); meta.className="meta"; meta.textContent=`${t.model} · ${t.ar} · ${t.dur}s · ${t.res}`;
+    const chip=document.createElement("span"); chip.className="chip "+(t.state==="done"?"ok":t.state==="error"?"bad":"run");
+    chip.textContent = t.state==="done"?"מוכן":t.state==="error"?"נכשל":(t.phase||"בהפקה");
+    const left=document.createElement("div"); left.style.cssText="display:flex;gap:10px;align-items:center;flex-wrap:wrap"; left.append(who,chip);
+    h.append(left,meta); el.append(h);
+    const pr=document.createElement("p"); pr.className="pr"; pr.dir="ltr"; pr.textContent=t.prompt; el.append(pr);
+    if (t.video){
+      const v=document.createElement("video"); v.src=t.video; v.controls=true; v.playsInline=true; v.preload="metadata"; el.append(v);
+    }
+    if (t.video || t.link){
+      const ls=document.createElement("div"); ls.className="links";
+      const a=document.createElement("a"); a.href=t.video||t.link; a.target="_blank"; a.rel="noopener"; a.textContent="פתיחה בלשונית חדשה"; ls.append(a);
+      const u=document.createElement("a"); u.href="#cut-h"; u.textContent="לחיתוך ב־OpusClip";
+      u.addEventListener("click",()=>{ $("#opus-url").value=t.video||t.link; });
+      ls.append(u); el.append(ls);
+    }
+    if (t.error){ const er=document.createElement("div"); er.className="err"; er.textContent=t.error; el.append(er); }
+    if (t.raw){
+      const d=document.createElement("details"); d.className="raw";
+      const s=document.createElement("summary"); s.textContent="התשובה המלאה מהשירות"; const pre=document.createElement("pre"); pre.textContent=t.raw;
+      d.append(s,pre); el.append(d);
+    }
+    b.append(el);
+  });
+}
+function update(t, patch){ Object.assign(t, patch); saveTakes(); renderBoard(); }
+function rawOf(p){ try{ const s = typeof p==="string"?p:JSON.stringify(p,null,2); return s.length>6000?s.slice(0,6000)+"\n…":s; }catch(e){ return String(p); } }
+
+/* ---------- run ---------- */
+async function runOne(s, o){
+  const t = { id: Date.now()+"-"+s.key, service:s.name, key:s.key, model:o.model, ar:o.ar, dur:o.dur, res:o.res, prompt:o.prompt, state:"run", phase:"נשלח" };
+  takes.unshift(t); saveTakes(); renderBoard();
+  if (!mcp){ update(t,{state:"error", error:"הקונקטורים לא זמינים בתצוגה הזו."}); return; }
+  const req = s.submit(o);
+  let p;
+  try{
+    const res = await mcp.callTool(s.server, req.tool, req.input, {cache:false});
+    p = parsePayload(res);
+  }catch(e){ update(t,{state:"error", error:errText(e,s.name), raw:e&&e.result?rawOf(e.result):""}); return; }
+  const v = findVideo(p);
+  if (v){ update(t,{state:"done", video:v, raw:rawOf(p)}); return; }
+  const jid = findId(p, s.idKeys);
+  update(t,{phase:"בתור", jobId:jid, raw:rawOf(p)});
+  if (!jid){ update(t,{state:"error", error:"השירות קיבל את הבקשה אבל לא החזיר מזהה עבודה. בדקו את התוצאה באתר של השירות.", link:findLink(p)}); return; }
+  pollLoop(s, t);
+}
+async function pollLoop(s, t){
+  for (let i=0; i<45; i++){
+    if (s.key!=="kolbo" && s.key!=="hedra") await new Promise(r=>setTimeout(r, 15000 + Math.random()*4000));
+    let p;
+    try{
+      const q = s.poll(t.jobId);
+      p = parsePayload(await mcp.callTool(s.server, q.tool, q.input, {cache:false}));
+    }catch(e){
+      if (e && e.retryable){ await new Promise(r=>setTimeout(r, e.retryAfterMs||8000)); continue; }
+      update(t,{state:"error", error:errText(e,s.name)}); return;
+    }
+    const v = findVideo(p), st = findStatus(p);
+    if (v){ update(t,{state:"done", video:v, raw:rawOf(p)}); return; }
+    if (st && FAIL.test(st)){ update(t,{state:"error", error:`${s.name} דיווח שהעבודה נכשלה.`, raw:rawOf(p)}); return; }
+    if (st && DONE.test(st)){ update(t,{state:"done", link:findLink(p), raw:rawOf(p), error: findLink(p)?"":"העבודה הסתיימה אבל לא נמצא קישור לסרטון. פתחו את התשובה המלאה."}); return; }
+    update(t,{phase: st ? "בהפקה · "+st : "בהפקה", raw:rawOf(p)});
+    if (s.key==="kolbo" || s.key==="hedra") await new Promise(r=>setTimeout(r, 3000));
+  }
+  update(t,{state:"error", error:"עבר זמן רב מדי. העבודה אולי עוד רצה, בדקו באתר של השירות."});
+}
+
+/* ---------- roll with inline confirm ---------- */
+$("#roll").addEventListener("click",()=>{
+  const prompt=$("#prompt").value.trim();
+  if (!prompt){ $("#roll-note").textContent="כתבו פרומפט קודם."; return; }
+  const list = selected().map(s=>s.name).join(", ");
+  $("#confirm-text").textContent = `ייצאו ${selected().length} הפקות במקביל (${list}), ${opts.dur} שניות ב־${opts.res}. כל שירות יחייב את הקרדיטים שלכם אצלו.`;
+  $("#confirm").hidden=false;
+});
+$("#confirm-no").addEventListener("click",()=>{ $("#confirm").hidden=true; });
+$("#confirm-yes").addEventListener("click",()=>{
+  $("#confirm").hidden=true;
+  const prompt=$("#prompt").value.trim();
+  selected().forEach(s=>runOne(s, {prompt, model:picks[s.key].model, ar:opts.ar, dur:opts.dur, res:opts.res}));
+});
+$("#clear").addEventListener("click",()=>{ takes = takes.filter(t=>t.state==="run"); saveTakes(); renderBoard(); });
+
+/* ---------- OpusClip ---------- */
+$("#opus-go").addEventListener("click", async ()=>{
+  const url=$("#opus-url").value.trim(), out=$("#opus-out");
+  if (!/^https?:\/\//.test(url)){ out.textContent="הדביקו קישור מלא שמתחיל ב־https://"; return; }
+  if (!mcp){ out.textContent="הקונקטורים לא זמינים בתצוגה הזו."; return; }
+  $("#opus-go").disabled=true; out.textContent="שולח ל־OpusClip…";
+  try{
+    const p = parsePayload(await mcp.callTool("OpusClip","opusclip_submit_project",{videoUrl:url, aspectRatio:$("#opus-ar").value},{cache:false}));
+    const id = findId(p,["projectId","project_id","id"]);
+    out.textContent = id ? `הפרויקט נקלט (מזהה ${id}). OpusClip יעבד אותו בדקות הקרובות, והקליפים יופיעו בחשבון OpusClip שלכם.` : "הבקשה נשלחה. הקליפים יופיעו בחשבון OpusClip שלכם.";
+  }catch(e){ out.textContent = errText(e,"OpusClip"); }
+  finally{ $("#opus-go").disabled=false; }
+});
+
+/* ---------- boot ---------- */
+renderChannels(); renderBoard();
+// resume polling for takes that were in flight when the page closed
+function resume(){
+  takes.filter(t=>t.state==="run" && t.jobId).forEach(t=>{ const s=SERVICES.find(x=>x.key===t.key); if(s) pollLoop(s,t); });
+}
+(async ()=>{
+  try{ mcp = window.claude && await window.claude.use("mcp"); }catch(e){ mcp=null; }
+  if (!mcp){ $("#nomcp").hidden=false; return; }
+  try{
+    const lt = await mcp.listTools();
+    const have = new Set((lt.servers||[]).map(x=>x.server));
+    SERVICES.concat([{server:"OpusClip"}]).forEach(s=>{
+      const sv=(lt.servers||[]).find(x=>x.server===s.server);
+      serverStatus[s.server] = !have.has(s.server) ? "לא מחובר" : sv.authStatus==="needs_reauth" ? "צריך להתחבר מחדש" : sv.authStatus==="connected" ? "מחובר" : "";
+    });
+    renderChannels();
+  }catch(e){}
+  resume();
+})();
+})();
+</script>
