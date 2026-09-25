@@ -4,8 +4,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=Assistant:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 :root{
-  --bg:#ECEEF1; --surface:#FFFFFF; --sunk:#E2E5EA; --ink:#14171C; --muted:#5A6371; --line:#CDD2DA;
-  --tally:#D11F3A; --tally-ink:#FFFFFF; --ok:#1E7F4F; --warn:#A5620B; --bad:#B3261E;
+  --bg:#ECEEF1; --surface:#FFFFFF; --sunk:#E3E6EB; --ink:#14171C; --muted:#5A6371; --line:#CDD2DA;
+  --tally:#D11F3A; --tally-ink:#FFFFFF; --ok:#1E7F4F; --warn:#9A5A08; --bad:#B3261E;
   --display:"Karantina","Assistant",system-ui,sans-serif;
   --body:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
@@ -23,443 +23,642 @@
   --tally:#FF4A5F; --tally-ink:#16070A; --ok:#4CC38A; --warn:#E3A13B; --bad:#FF6B61;
 }
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding:24px 16px 48px}
-.wrap{max-width:1180px;margin:0 auto;display:grid;gap:28px}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;padding:20px 16px 56px}
+.wrap{max-width:1240px;margin:0 auto;display:grid;gap:22px}
 header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px}
-h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,8vw,76px);line-height:.9;margin:0;letter-spacing:.01em;text-wrap:balance}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,8vw,76px);line-height:.9;margin:0;letter-spacing:.01em}
 h1 .rec{display:inline-block;width:.28em;height:.28em;border-radius:50%;background:var(--tally);vertical-align:.18em;margin-inline-start:.18em;animation:blink 1.6s steps(2,start) infinite}
 @keyframes blink{to{visibility:hidden}}
 @media (prefers-reduced-motion:reduce){h1 .rec{animation:none}}
+.lede{margin:6px 0 0;color:var(--muted);max-width:62ch}
 .tc{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;direction:ltr}
-.lede{margin:6px 0 0;color:var(--muted);max-width:60ch}
-h2{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:0 0 12px;letter-spacing:.02em}
-.label{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:28px;align-items:start}
-@media (max-width:900px){.grid{grid-template-columns:1fr}}
-
-/* slate */
-.slate{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.slate-bar{height:18px;background:repeating-linear-gradient(-45deg,var(--ink) 0 14px,var(--surface) 14px 28px)}
-.slate-body{padding:18px;display:grid;gap:16px}
-textarea,select,input[type=url],input[type=text]{width:100%;font:inherit;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:10px 12px}
-textarea{min-height:120px;resize:vertical}
+h2{font-family:var(--display);font-weight:700;font-size:34px;line-height:1;margin:0;letter-spacing:.02em}
+h3{font-size:15px;margin:0}
+.label{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--muted)}
+.note{font-size:14px;color:var(--muted);margin:0}
 :focus-visible{outline:2px solid var(--tally);outline-offset:2px}
-.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-@media (max-width:420px){.row3{grid-template-columns:1fr 1fr}}
+
+/* wallet */
+.wallet{display:flex;flex-wrap:wrap;gap:8px}
+.w{display:flex;gap:8px;align-items:baseline;padding:6px 10px;border:1px solid var(--line);border-radius:4px;background:var(--surface);font-size:14px}
+.w b{font-weight:700}
+.w .v{font-family:var(--mono);font-variant-numeric:tabular-nums;direction:ltr}
+.w[data-s="low"] .v{color:var(--warn)} .w[data-s="empty"] .v{color:var(--bad)} .w[data-s="ok"] .v{color:var(--ok)}
+.w button{font:inherit;font-size:12px;background:none;border:0;color:var(--muted);cursor:pointer;padding:0}
+
+/* rooms nav */
+nav.rooms{display:flex;gap:0;overflow-x:auto;border-bottom:1px solid var(--line);scrollbar-width:thin}
+nav.rooms button{font:inherit;font-weight:600;white-space:nowrap;padding:10px 14px;border:0;border-bottom:3px solid transparent;background:none;color:var(--muted);cursor:pointer}
+nav.rooms button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--tally)}
+nav.rooms button .n{font-family:var(--mono);font-size:11px;margin-inline-end:6px;color:var(--muted)}
+
+.layout{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:24px;align-items:start}
+@media (max-width:920px){.layout{grid-template-columns:1fr}}
+
+/* slate panel */
+.slate{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.slate-bar{height:16px;background:repeating-linear-gradient(-45deg,var(--ink) 0 14px,var(--surface) 14px 28px)}
+.slate-body{padding:18px;display:grid;gap:14px}
+.room{display:grid;gap:14px}
+.room[hidden]{display:none!important}
+.room .intro{font-size:14px;color:var(--muted);margin:0}
+textarea,select,input[type=url],input[type=text],input[type=number]{width:100%;font:inherit;color:var(--ink);background:var(--sunk);border:1px solid var(--line);border-radius:4px;padding:9px 11px}
+textarea{min-height:104px;resize:vertical}
+input[type=url]{direction:ltr;text-align:left}
 .field{display:grid;gap:6px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px}
 .seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden}
 .seg button{flex:1;font:inherit;font-family:var(--mono);font-size:13px;padding:8px 4px;border:0;background:var(--sunk);color:var(--ink);cursor:pointer;direction:ltr}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-
 .channels{display:grid;gap:8px}
-.ch{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sunk)}
+.ch{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;align-items:center;padding:9px 12px;border:1px solid var(--line);border-radius:4px;background:var(--sunk)}
 .ch input[type=checkbox]{width:18px;height:18px;accent-color:var(--tally)}
 .ch .nm{font-weight:700;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
 .ch .nm small{font-weight:400;color:var(--muted);font-size:13px}
 .ch select{grid-column:2;padding:6px 8px;font-size:14px;font-family:var(--mono);direction:ltr;text-align:left}
 .ch[data-off="true"]{opacity:.55}
-.ch .conn{font-size:12px;font-family:var(--mono)}
+.pickrow{display:flex;gap:8px}
+.pickrow input{flex:1}
+.pickrow button{flex:0 0 auto}
+.thumbpick{display:flex;gap:6px;flex-wrap:wrap}
+.thumbpick img,.thumbpick video{width:56px;height:56px;object-fit:cover;border-radius:3px;border:2px solid transparent;cursor:pointer}
+.thumbpick .aud{width:56px;height:56px;border-radius:3px;border:1px solid var(--line);display:grid;place-items:center;font-family:var(--mono);font-size:11px;cursor:pointer;background:var(--sunk)}
 
-.roll{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.btn{font:inherit;font-weight:700;border-radius:4px;padding:11px 18px;cursor:pointer;border:1px solid var(--ink);background:transparent;color:var(--ink)}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.btn{font:inherit;font-weight:700;border-radius:4px;padding:10px 16px;cursor:pointer;border:1px solid var(--ink);background:transparent;color:var(--ink)}
 .btn.primary{background:var(--tally);border-color:var(--tally);color:var(--tally-ink);font-size:17px}
+.btn.sm{padding:5px 10px;font-size:13px;font-weight:600}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .confirm{border:1px dashed var(--tally);border-radius:4px;padding:12px;display:grid;gap:10px}
-.note{font-size:14px;color:var(--muted)}
 
 /* board */
+.board-h{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.filters{display:flex;gap:6px;flex-wrap:wrap}
+.filters button{font:inherit;font-size:13px;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--surface);color:var(--muted);cursor:pointer}
+.filters button[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);font-weight:700}
 .board{display:grid;gap:12px}
-.empty{border:1px dashed var(--line);border-radius:6px;padding:28px;color:var(--muted);text-align:center}
+.empty{border:1px dashed var(--line);border-radius:6px;padding:26px;color:var(--muted);text-align:center}
 .take{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:10px}
-.take-h{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between}
-.take-h .who{font-weight:700}
-.take-h .meta{font-family:var(--mono);font-size:12px;color:var(--muted);direction:ltr}
-.chip{font-family:var(--mono);font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.take-h{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;justify-content:space-between}
+.take-h .who{font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.kind{font-size:12px;color:var(--muted);font-weight:600}
+.meta{font-family:var(--mono);font-size:12px;color:var(--muted);direction:ltr}
+.chip{font-family:var(--mono);font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
 .chip.run{color:var(--warn)} .chip.ok{color:var(--ok)} .chip.bad{color:var(--bad)}
-.take p.pr{margin:0;color:var(--muted);font-size:14px}
-.take video{width:100%;max-width:100%;border-radius:4px;background:#000;display:block}
+.take p.pr{margin:0;color:var(--muted);font-size:14px;overflow-wrap:anywhere}
+.media{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px}
+.media.one{grid-template-columns:1fr}
+.media img,.media video{width:100%;max-width:100%;border-radius:4px;background:#000;display:block}
+.media audio{width:100%}
+.item{display:grid;gap:6px}
+.itemacts{display:flex;gap:6px;flex-wrap:wrap}
 .take .err{color:var(--bad);font-size:14px}
-.take .links{display:flex;gap:12px;flex-wrap:wrap;font-size:14px}
 .take a{color:var(--tally)}
 details.raw summary{cursor:pointer;font-size:13px;color:var(--muted)}
-details.raw pre{font-family:var(--mono);font-size:12px;background:var(--sunk);padding:10px;border-radius:4px;overflow-x:auto;max-height:260px;direction:ltr;text-align:left}
-
-.cutroom{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:grid;gap:12px}
-.inline{display:flex;gap:10px;flex-wrap:wrap}
-.inline input{flex:1 1 240px}
+details.raw pre{font-family:var(--mono);font-size:12px;background:var(--sunk);padding:10px;border-radius:4px;overflow-x:auto;max-height:260px;direction:ltr;text-align:left;white-space:pre-wrap;overflow-wrap:anywhere}
 .banner{border-inline-start:4px solid var(--warn);background:var(--surface);padding:10px 14px;border-radius:4px;font-size:14px}
+.pipeline{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.pipeline span.step{font-family:var(--mono);border:1px solid var(--line);border-radius:3px;padding:1px 6px;background:var(--surface)}
 </style>
 
 <div class="wrap" dir="rtl" lang="he">
   <header class="top">
     <div>
       <h1>סטודיו וידאו<span class="rec" aria-hidden="true"></span></h1>
-      <p class="lede">כתבו פרומפט אחד ושלחו אותו לכל שירותי הווידאו שמחוברים לחשבון Claude שלכם. כל שירות מחזיר טייק משלו, ואפשר להשוות ביניהם זה לצד זה.</p>
+      <p class="lede">כל כלי ה־AI שמחוברים לחשבון שלך במקום אחד. כאן יוצרים וידאו, תמונות, קריינות, מוזיקה, סאונד וליפסינק, ומשדרגים איכות. כל תוצאה נשמרת בלוח, ואפשר להעביר אותה בלחיצה לשלב הבא.</p>
+      <div class="pipeline" aria-label="זרימת עבודה לדוגמה"><span class="step">תמונה</span>←<span class="step">הנפשה</span>←<span class="step">קריינות</span>←<span class="step">ליפסינק</span>←<span class="step">מוזיקה</span>←<span class="step">שדרוג 1080p</span></div>
     </div>
     <div class="tc" id="tc">TC 00:00:00:00</div>
   </header>
 
-  <div class="banner" id="nomcp" hidden>הדף לא מצליח להתחבר לקונקטורים. פתחו אותו מתוך claude.ai כשאתם מחוברים לחשבון, ובדקו שהקונקטורים מחוברים בהגדרות ← Connectors.</div>
+  <div>
+    <div class="label" style="margin-bottom:6px">קרדיטים</div>
+    <div class="wallet" id="wallet"></div>
+  </div>
 
-  <div class="grid">
-    <section aria-labelledby="slate-h">
-      <div class="slate">
-        <div class="slate-bar" aria-hidden="true"></div>
-        <div class="slate-body">
-          <h2 id="slate-h">קלאפר</h2>
-          <div class="field">
-            <label class="label" for="prompt">סצנה / פרומפט</label>
-            <textarea id="prompt">A lone lighthouse keeper climbs a spiral staircase at dusk, warm lantern light flickering on stone walls, slow dolly up, cinematic 35mm film grain, waves crashing outside the window.</textarea>
-            <span class="note">מודלים כמו Seedance לא מבינים עברית. כתבו באנגלית לתוצאה הטובה ביותר.</span>
-          </div>
-          <div class="row3">
-            <div class="field"><span class="label">יחס מסך</span>
-              <div class="seg" id="seg-ar" role="group" aria-label="יחס מסך">
-                <button type="button" data-v="16:9" aria-pressed="true">16:9</button>
-                <button type="button" data-v="9:16" aria-pressed="false">9:16</button>
-                <button type="button" data-v="1:1" aria-pressed="false">1:1</button>
-              </div>
-            </div>
-            <div class="field"><span class="label">אורך</span>
-              <div class="seg" id="seg-dur" role="group" aria-label="אורך בשניות">
-                <button type="button" data-v="5" aria-pressed="true">5s</button>
-                <button type="button" data-v="10" aria-pressed="false">10s</button>
-              </div>
-            </div>
-            <div class="field"><span class="label">רזולוציה</span>
-              <div class="seg" id="seg-res" role="group" aria-label="רזולוציה">
-                <button type="button" data-v="480p" aria-pressed="true">480p</button>
-                <button type="button" data-v="720p" aria-pressed="false">720p</button>
-              </div>
-            </div>
-          </div>
+  <div class="banner" id="nomcp" hidden>הדף לא מצליח להתחבר לקונקטורים. פתחו אותו מתוך claude.ai כשאתם מחוברים לחשבון, ובדקו בהגדרות ← Connectors שהקונקטורים מחוברים.</div>
 
-          <div class="field">
-            <span class="label">ערוצים</span>
-            <div class="channels" id="channels"></div>
-          </div>
+  <nav class="rooms" id="rooms" role="tablist" aria-label="חדרי עבודה"></nav>
 
-          <div class="roll">
-            <button class="btn primary" id="roll" type="button">צילום! שלח לערוצים</button>
-            <span class="note" id="roll-note"></span>
-          </div>
-          <div class="confirm" id="confirm" hidden>
-            <div id="confirm-text"></div>
-            <div class="roll">
-              <button class="btn primary" id="confirm-yes" type="button">כן, להפיק</button>
-              <button class="btn" id="confirm-no" type="button">ביטול</button>
-            </div>
-          </div>
-        </div>
-      </div>
+  <div class="layout">
+    <section class="slate" aria-label="הגדרות">
+      <div class="slate-bar" aria-hidden="true"></div>
+      <div class="slate-body" id="rooms-body"></div>
     </section>
 
     <section aria-labelledby="board-h">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">
-        <h2 id="board-h">טייקים</h2>
-        <button class="btn" id="clear" type="button" style="padding:6px 12px;font-size:14px">ניקוי הלוח</button>
+      <div class="board-h">
+        <h2 id="board-h">לוח תוצאות</h2>
+        <div class="filters" id="filters" role="group" aria-label="סינון">
+          <button type="button" data-f="all" aria-pressed="true">הכל</button>
+          <button type="button" data-f="video" aria-pressed="false">וידאו</button>
+          <button type="button" data-f="image" aria-pressed="false">תמונות</button>
+          <button type="button" data-f="audio" aria-pressed="false">אודיו</button>
+        </div>
+        <button class="btn sm" id="clear" type="button">ניקוי מה שהסתיים</button>
       </div>
       <div class="board" id="board"></div>
     </section>
   </div>
-
-  <section class="cutroom" aria-labelledby="cut-h">
-    <h2 id="cut-h">חדר עריכה · OpusClip</h2>
-    <p class="note" style="margin:0">הדביקו קישור לסרטון ארוך (YouTube, Drive, Vimeo או כל קובץ mp4 ציבורי). OpusClip יחתוך ממנו קליפים קצרים לרשתות. אפשר גם להדביק קישור לטייק מהלוח. דורש מנוי Pro ומעלה ב־OpusClip.</p>
-    <div class="inline">
-      <input type="url" id="opus-url" placeholder="https://www.youtube.com/watch?v=..." dir="ltr">
-      <select id="opus-ar" style="flex:0 0 160px" aria-label="יחס מסך לקליפים">
-        <option value="portrait">9:16 אנכי</option>
-        <option value="square">1:1 ריבוע</option>
-        <option value="landscape">16:9 רוחבי</option>
-      </select>
-      <button class="btn" id="opus-go" type="button">שלח ל־OpusClip</button>
-    </div>
-    <div id="opus-out" class="note"></div>
-  </section>
 </div>
 
 <script>
 (function(){
 "use strict";
 const $ = s => document.querySelector(s);
-
-/* ---------- services ---------- */
-const SERVICES = [
-  { key:"kolbo", server:"Kolbo", name:"Kolbo", blurb:"יותר מ־50 מודלים",
-    models:[["seedance-2-mini","Seedance 2.0 Mini"],["seedance-2-5","Seedance 2.5"],["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["kling-video/v2.6/pro/text-to-video","Kling 2.6 Pro"],["veo3.1/lite","Veo 3.1 Lite"],["gemini-omni-flash-1.1","Gemini Omni Flash 1.1 (עברית)"]],
-    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration:o.dur, resolution:o.res}}),
-    poll:(id)=>({tool:"get_generation_status", input:{generation_id:id, wait:true}}),
-    idKeys:["generation_id","generationId","id"] },
-  { key:"hedra", server:"hedra", name:"Hedra", blurb:"אווטרים ומודלי קולנוע",
-    models:[["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["seedance-25","Seedance 2.5"],["kling-25-turbo","Kling 2.5 Turbo"],["veo-31","Veo 3.1"],["wan-3-0","Wan 3.0"]],
-    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration_ms:o.dur*1000, resolution:o.res}}),
-    poll:(id)=>({tool:"get_generations", input:{job_ids:[id], wait_seconds:20}}),
-    idKeys:["job_id","jobId","id","generation_id"] },
-  { key:"krea", server:"yosi", name:"Krea", blurb:"Seedance, Veo, Kling ועוד",
-    models:[["bytedance/seedance-2-5","Seedance 2.5"],["bytedance/seedance-2-mini","Seedance 2.0 Mini"],["kling/kling-3.0","Kling 3.0"],["google/veo-3.1-fast","Veo 3.1 Fast"],["minimax/h3-max-turbo","MiniMax H3 Max Turbo"]],
-    submit:(o)=>{
-      const input = {prompt:o.prompt, aspect_ratio:o.ar};
-      if (o.model==="bytedance/seedance-2-5"){ input.duration=o.dur; input.resolution=o.res; }
-      return {tool:"generate_video", input:{model:o.model, input}};
-    },
-    poll:(id)=>({tool:"get_job", input:{jobId:id}}),
-    idKeys:["job_id","jobId","id"] },
-  { key:"openart", server:"openart", name:"OpenArt", blurb:"PixVerse, Seedance, Veo",
-    models:[["pixverseV6","PixVerse V6"],["fal-h3-max-turbo","MiniMax H3 Max Turbo"],["wan3-0","Wan 3.0"],["byte-plus-seedance-2-mini","Seedance 2.0 Mini"]],
-    submit:(o)=>{
-      const params = {prompt:o.prompt};
-      if (o.model==="pixverseV6"){ params.duration=o.dur; params.aspectRatio=o.ar; params.resolution=o.res==="480p"?"540p":o.res; }
-      return {tool:"openart_generate_video", input:{model:o.model, mode:"text2video", params}};
-    },
-    poll:(id)=>({tool:"openart_creation_get", input:{historyId:id}}),
-    idKeys:["historyId","history_id","id"] },
-  { key:"bp", server:"BudgetPixel", name:"BudgetPixel", blurb:"Seedance ו־Wan במחיר נמוך",
-    models:[["seedance-2.0-mini","SeeDance 2.0 Mini"],["wan-3.0-video","Wan 3.0"],["seedance-2.5","SeeDance 2.5"],["minimax-h3-max","MiniMax H3 Max"]],
-    submit:(o)=>({tool:"generate_video", input:{prompt:o.prompt, model:o.model, aspect_ratio:o.ar, duration_seconds:o.dur, resolution:o.res}}),
-    poll:(id)=>({tool:"check_generation_status", input:{job_id:id, type:"video"}}),
-    idKeys:["job_id","jobId","id"] }
-];
-
-/* ---------- state ---------- */
+const h = (tag, attrs={}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)) {
+    if (v==null || v===false) continue;
+    if (k==="class") e.className=v; else if (k==="text") e.textContent=v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else e.setAttribute(k, v===true?"":v);
+  }
+  kids.flat().forEach(c=>{ if(c!=null) e.append(c.nodeType?c:document.createTextNode(c)); });
+  return e;
+};
 const store = {
   get(k,d){ try{ const v=localStorage.getItem(k); return v?JSON.parse(v):d; }catch(e){ return d; } },
   set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} }
 };
-const opts = { ar:"16:9", dur:5, res:"480p" };
-const picks = store.get("studio.picks", {});
-let takes = store.get("studio.takes", []);
+
+/* connector display names as they appear in claude.ai */
+const SRV = { kolbo:"Kolbo", hedra:"hedra", krea:"yosi", openart:"openart", bp:"יוסי אריה", opus:"OpusClip" };
+const NAME = { kolbo:"Kolbo", hedra:"Hedra", krea:"Krea", openart:"OpenArt", bp:"BudgetPixel", opus:"OpusClip" };
+
+/* how each service reports job progress */
+const POLL = {
+  kolbo:  id=>["get_generation_status",{generation_id:id, wait:true}],
+  kolboCD:id=>["get_creative_director_status",{generation_id:id, wait:true}],
+  hedra:  id=>["get_generations",{job_ids:[id], wait_seconds:20}],
+  krea:   id=>["get_job",{jobId:id}],
+  openart:id=>["openart_creation_get",{historyId:id}],
+  bpVideo:id=>["check_generation_status",{job_id:id, type:"video"}],
+  bpImage:id=>["check_generation_status",{job_id:id, type:"image"}],
+  bpMusic:id=>["check_generation_status",{job_id:id, type:"music"}],
+  bpSfx:  id=>["check_generation_status",{job_id:id, type:"sound_effect"}],
+  bpUp:   id=>["upscale_video",{job_id:Number(id)}]
+};
+const BLOCKING_POLL = new Set(["kolbo","kolboCD","hedra"]); // these calls wait server-side
+const ID_KEYS = ["generation_id","generationId","job_id","jobId","historyId","history_id","projectId","project_id","id"];
+
+/* ---------- rooms ---------- */
+const AR3 = ["16:9","9:16","1:1"];
+const ROOMS = [
+ { id:"t2v", title:"טקסט לווידאו", kind:"video",
+   intro:"פרומפט אחד נשלח לכמה שירותים במקביל. כך משווים מודלים על אותה סצנה.",
+   fields:[
+     {id:"prompt", type:"textarea", label:"סצנה", value:"A lone lighthouse keeper climbs a spiral staircase at dusk, warm lantern light flickering on stone walls, slow dolly up, cinematic 35mm film grain, waves crashing outside the window.", hint:"כתבו באנגלית. Seedance לא מבין עברית. לדיאלוג בעברית בחרו Gemini Omni ב־Kolbo."},
+     {id:"ar", type:"seg", label:"יחס מסך", opts:AR3},
+     {id:"dur", type:"seg", label:"אורך", opts:["5","10"], suffix:"s"},
+     {id:"res", type:"seg", label:"רזולוציה", opts:["480p","720p"]}
+   ],
+   channels:[
+     {svc:"kolbo", models:[["prunaai/p-video-draft","P Video Draft (הכי זול)"],["seedance-2-mini","Seedance 2.0 Mini"],["seedance-2-5","Seedance 2.5"],["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["kling-video/v2.6/pro/text-to-video","Kling 2.6 Pro"],["veo3.1/lite","Veo 3.1 Lite"],["gemini-omni-flash-1.1","Gemini Omni Flash 1.1 (עברית)"]],
+      build:(v,m)=>["generate_video",{prompt:v.prompt, model:m, aspect_ratio:v.ar, duration:+v.dur, resolution:m==="prunaai/p-video-draft"?"720p":v.res}], poll:"kolbo"},
+     {svc:"hedra", off:true, models:[["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["seedance-25","Seedance 2.5"],["kling-25-turbo","Kling 2.5 Turbo"],["veo-31","Veo 3.1"],["wan-3-0","Wan 3.0"]],
+      build:(v,m)=>["generate_video",{prompt:v.prompt, model:m, aspect_ratio:v.ar, duration_ms:+v.dur*1000, resolution:v.res}], poll:"hedra"},
+     {svc:"krea", models:[["bytedance/seedance-2-5","Seedance 2.5"],["bytedance/seedance-2-mini","Seedance 2.0 Mini"],["kling/kling-3.0","Kling 3.0"],["google/veo-3.1-fast","Veo 3.1 Fast"],["minimax/h3-max-turbo","MiniMax H3 Max Turbo"]],
+      build:(v,m)=>{ const input={prompt:v.prompt, aspect_ratio:v.ar}; if(m==="bytedance/seedance-2-5"){input.duration=+v.dur; input.resolution=v.res;} return ["generate_video",{model:m, input}]; }, poll:"krea"},
+     {svc:"openart", off:true, models:[["pixverseV6","PixVerse V6"],["fal-h3-max-turbo","MiniMax H3 Max Turbo"],["wan3-0","Wan 3.0"]],
+      build:(v,m)=>{ const params={prompt:v.prompt}; if(m==="pixverseV6"){params.duration=+v.dur; params.aspectRatio=v.ar; params.resolution=v.res==="480p"?"540p":v.res;} return ["openart_generate_video",{model:m, mode:"text2video", params}]; }, poll:"openart"},
+     {svc:"bp", models:[["wan-3.0-video","Wan 3.0 (60 לשנייה ב־480p)"],["seedance-2.0-mini","SeeDance 2.0 Mini"],["seedance-2.5","SeeDance 2.5"],["minimax-h3-max","MiniMax H3 Max"]],
+      build:(v,m)=>["generate_video",{prompt:v.prompt, model:m, aspect_ratio:v.ar, duration_seconds:+v.dur, resolution:v.res}], poll:"bpVideo"}
+   ]},
+ { id:"i2v", title:"תמונה לווידאו", kind:"video",
+   intro:"הנפשה של תמונה קיימת. אפשר לבחור תמונה מהלוח, או להדביק קישור ציבורי לתמונה.",
+   fields:[
+     {id:"image", type:"media", accept:"image", label:"תמונת פתיחה"},
+     {id:"prompt", type:"textarea", label:"תנועה", value:"Slow push-in, hair and fabric move gently in the wind, soft volumetric light, subtle parallax."},
+     {id:"ar", type:"seg", label:"יחס מסך", opts:AR3},
+     {id:"dur", type:"seg", label:"אורך", opts:["5","10"], suffix:"s"},
+     {id:"res", type:"seg", label:"רזולוציה", opts:["480p","720p"]}
+   ],
+   channels:[
+     {svc:"kolbo", models:[["prunaai/p-video-draft","P Video Draft (הכי זול)"],["seedance-2-mini","Seedance 2.0 Mini"],["kling-video/v2.6/pro/image-to-video","Kling 2.6 Pro"],["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["wan3.0-image-to-video","Wan 3.0"],["flux-3-image-to-video-draft","FLUX 3 Draft"]],
+      build:(v,m)=>["generate_video_from_image",{image_url:v.image, prompt:v.prompt, model:m, aspect_ratio:v.ar, duration:+v.dur, resolution:m==="prunaai/p-video-draft"?"720p":v.res}], poll:"kolbo"},
+     {svc:"hedra", off:true, models:[["minimax-h3-max-turbo","MiniMax H3 Max Turbo"],["kling-v3","Kling V3"],["seedance-15-pro","Seedance 1.5 Pro"],["ltx-2-3","LTX-2.3"]],
+      build:(v,m)=>["generate_video",{prompt:v.prompt, model:m, start_keyframe_url:v.image, aspect_ratio:v.ar, duration_ms:+v.dur*1000, resolution:v.res}], poll:"hedra"},
+     {svc:"krea", models:[["bytedance/seedance-2-5","Seedance 2.5"]],
+      build:(v,m)=>["generate_video",{model:m, input:{prompt:v.prompt, start_image:v.image, aspect_ratio:v.ar, duration:+v.dur, resolution:v.res}}], poll:"krea"},
+     {svc:"bp", models:[["wan-3.0-video","Wan 3.0"],["seedance-2.0-mini","SeeDance 2.0 Mini"],["seedance-2.5","SeeDance 2.5"]],
+      build:(v,m)=>["generate_video",{prompt:v.prompt, model:m, image:v.image, duration_seconds:+v.dur, resolution:v.res}], poll:"bpVideo"}
+   ]},
+ { id:"img", title:"תמונות ופריימים", kind:"image",
+   intro:"פריים פתיחה, דמות או לוקיישן. מכאן ממשיכים ל״הנפשה״ או ל״ליפסינק״.",
+   fields:[
+     {id:"prompt", type:"textarea", label:"תיאור התמונה", value:"Portrait of an elderly fisherman in a yellow raincoat on a stormy pier, cinematic lighting, 85mm, shallow depth of field."},
+     {id:"ar", type:"seg", label:"יחס מסך", opts:["16:9","9:16","1:1"]}
+   ],
+   channels:[
+     {svc:"bp", models:[["flux-2-klein","FLUX 2 Klein (10)"],["z-image-turbo","Z-Image Turbo (15)"],["seedream-5.0-pro","SeeDream 5.0 Pro"],["nano-banana-2","Nano Banana 2"],["gpt-image-2","GPT Image 2"]],
+      build:(v,m)=>["generate_image",{prompt:v.prompt, model:m, aspect_ratio:v.ar}], poll:"bpImage"},
+     {svc:"kolbo", models:[["nano-banana-2","Nano Banana 2"],["gpt-image-2","GPT Image 2"],["nano-banana-lite","Nano Banana Lite"],["grok-imagine-text-to-image","Grok Imagine"]],
+      build:(v,m)=>["generate_image",{prompt:v.prompt, model:m, aspect_ratio:v.ar}], poll:"kolbo"},
+     {svc:"krea", models:[["krea/krea-2/medium-turbo","Krea 2 Turbo"],["krea/krea-2/large","Krea 2 Large"],["google/nano-banana-2","Nano Banana 2"],["bytedance/seedream-5-pro","Seedream 5 Pro"]],
+      build:(v,m)=>["generate_image",{model:m, input:{prompt:v.prompt}}], poll:"krea"},
+     {svc:"hedra", off:true, models:[["gpt-image-2","GPT Image 2"]],
+      build:(v,m)=>["generate_image",{prompt:v.prompt, model:m, aspect_ratio:v.ar}], poll:"hedra"}
+   ]},
+ { id:"story", title:"סטוריבורד", kind:"video",
+   intro:"Creative Director של Kolbo מקבל תקציר אחד ומתכנן ממנו כמה סצנות עם סגנון אחיד. אפשר לקבל תמונות (סטוריבורד) או וידאו לכל סצנה.",
+   fields:[
+     {id:"prompt", type:"textarea", label:"תקציר", value:"A 30-second ad for a small Tel Aviv coffee roastery: dawn delivery bike through empty streets, beans cracking in the roaster, barista pouring latte art, friends laughing at a sidewalk table."},
+     {id:"mode", type:"seg", label:"פלט", opts:["image","video"], labels:{image:"תמונות",video:"וידאו"}},
+     {id:"scenes", type:"seg", label:"סצנות", opts:["3","4","6"]},
+     {id:"ar", type:"seg", label:"יחס מסך", opts:AR3}
+   ],
+   channels:[
+     {svc:"kolbo", models:[["auto","לפי סוג הפלט"],["nano-banana-2","תמונות: Nano Banana 2"],["seedance-2-mini","וידאו: Seedance 2.0 Mini"],["prunaai/p-video-draft","וידאו: P Video Draft"]],
+      build:(v,m)=>{ const model = m==="auto" ? (v.mode==="video"?"seedance-2-mini":"nano-banana-2") : m;
+        const a={prompt:v.prompt, workflow_type:v.mode, scene_count:+v.scenes, aspect_ratio:v.ar, model}; if(v.mode==="video") a.duration=5;
+        return ["generate_creative_director",a]; }, poll:"kolboCD"}
+   ]},
+ { id:"voice", title:"קריינות", kind:"audio",
+   intro:"טקסט לדיבור, כולל קולות ישראליים בעברית. אחר כך אפשר לשלוח את הקריינות לליפסינק על דמות.",
+   fields:[
+     {id:"text", type:"textarea", label:"טקסט להקראה", value:"בכל בוקר, לפני שהעיר מתעוררת, אנחנו כבר קולים את הפולים של היום."},
+     {id:"voice", type:"voices", label:"קול"},
+     {id:"style", type:"select", label:"סגנון", opts:[["","רגיל"],["conversational","שיחתי"],["reading","הקראה"],["excited","נלהב"],["whisper","לחישה"]]}
+   ],
+   channels:[
+     {svc:"kolbo", models:[["dd-etts-2.5","Deepdub (עברית)"],["eleven_v3","ElevenLabs V3"],["eleven_multilingual_v3","ElevenLabs V3 Multilingual"],["google_tts","Google TTS"]],
+      build:(v,m)=>{ const a={text:v.text, model:m, voice:v.voice, language:"he-IL"}; if(v.style) a.selected_style=v.style; return ["generate_speech",a]; }, poll:"kolbo"}
+   ]},
+ { id:"music", title:"מוזיקה וסאונד", kind:"audio",
+   intro:"פסקול, שיר או אפקטים. אם בוחרים וידאו מהלוח, BudgetPixel מלחין מוזיקה או מייצר אפקטים שמסונכרנים לסרטון.",
+   fields:[
+     {id:"what", type:"seg", label:"סוג", opts:["music","sfx"], labels:{music:"מוזיקה",sfx:"אפקטים"}},
+     {id:"prompt", type:"textarea", label:"תיאור", value:"Warm lo-fi acoustic guitar with soft brushed drums, morning coffee mood, 90 BPM."},
+     {id:"video", type:"media", accept:"video", label:"וידאו לסנכרון (לא חובה)", optional:true},
+     {id:"dur", type:"seg", label:"אורך", opts:["10","30","60"], suffix:"s"},
+     {id:"instr", type:"seg", label:"שירה", opts:["yes","no"], labels:{yes:"אינסטרומנטלי",no:"עם שירה"}}
+   ],
+   channels:[
+     {svc:"bp", models:[["auto","לפי סוג (Sonilo)"],["mureka-v9","Mureka V9 (60)"],["music-3.0","Music 3.0"]],
+      build:(v,m)=>{
+        if (v.what==="sfx") { const a={prompt:v.prompt}; if(v.video) a.video=v.video; else a.duration=Math.min(+v.dur,30); return ["generate_sound_effect",a]; }
+        const a={prompt:v.prompt};
+        if (v.video) a.video=v.video;
+        else if (m==="auto"){ a.model="sonilo-music"; a.duration=+v.dur; }
+        else { a.model=m; a.instrumental = v.instr==="yes"; }
+        return ["generate_music",a]; },
+      pollFor:v=>v.what==="sfx"?"bpSfx":"bpMusic"},
+     {svc:"kolbo", models:[["suno-v6-mini","Suno v6 Mini"],["suno-v6","Suno v6"],["music-v1","ElevenLabs Music"],["sound-effects-v1","אפקטים: ElevenLabs SFX"]],
+      build:(v,m)=>{
+        if (v.what==="sfx") return ["generate_sound",{prompt:v.prompt, duration:Math.min(+v.dur,22), model:m.startsWith("sound")?m:"sound-effects-v1"}];
+        return ["generate_music",{prompt:v.prompt, model:m.startsWith("sound")?"suno-v6-mini":m, instrumental:v.instr==="yes"}]; }, poll:"kolbo"},
+     {svc:"hedra", off:true, models:[["elevenlabs-music","ElevenLabs Music"]],
+      build:(v,m)=> v.what==="sfx" ? ["generate_sound_effects",{text:v.prompt, duration_ms:Math.min(+v.dur,22)*1000}] : ["generate_music",{prompt:v.prompt, duration_ms:+v.dur*1000, force_instrumental:v.instr==="yes"}], poll:"hedra"}
+   ]},
+ { id:"lip", title:"ליפסינק", kind:"video",
+   intro:"דמות שמדברת: תמונה או וידאו של פנים, ועוד קובץ קול. אפשר לבחור את הקריינות מהלוח.",
+   fields:[
+     {id:"source", type:"media", accept:"image,video", label:"פנים (תמונה או וידאו)"},
+     {id:"audio", type:"media", accept:"audio", label:"קול"},
+     {id:"prompt", type:"text", label:"הנחיית משחק (לא חובה)", value:"", optional:true}
+   ],
+   channels:[
+     {svc:"kolbo", models:[["kling-video/ai-avatar/v2/standard","תמונה: Kling Avatar v2"],["prunaai/p-video-avatar","תמונה: P Video Avatar"],["bytedance/omnihuman/v1.5","תמונה: OmniHuman 1.5"],["lipsync-v1","תמונה: Hedra Character 3"],["sync-lipsync/v3","וידאו: Sync-3"],["veed/lipsync/v2","וידאו: VEED Lipsync v2"]],
+      build:(v,m)=>{ const a={source:v.source, audio:v.audio, model:m}; if(v.prompt) a.text_prompt=v.prompt; return ["generate_lipsync",a]; }, poll:"kolbo"}
+   ]},
+ { id:"up", title:"שדרוג ועריכה", kind:"video",
+   intro:"שדרוג וידאו ל־1080p או 4K עם Topaz. אפשר גם לשלוח סרטון ארוך ל־OpusClip, שיחתוך ממנו קליפים לרשתות.",
+   fields:[
+     {id:"video", type:"media", accept:"video", label:"וידאו"},
+     {id:"target", type:"seg", label:"יעד", opts:["1080p","4k"]},
+     {id:"opusar", type:"select", label:"OpusClip: יחס קליפים", opts:[["portrait","9:16 אנכי"],["square","1:1 ריבוע"],["landscape","16:9 רוחבי"]]}
+   ],
+   channels:[
+     {svc:"bp", models:[["topaz","Topaz (15 לשנייה ב־1080p)"]],
+      build:(v)=>["upscale_video",{video:v.video, target_resolution:v.target}], poll:"bpUp"},
+     {svc:"hedra", off:true, models:[["topaz-video-upscaler","Topaz Proteus"],["flux-3-video-upscaler-precise","FLUX.3 Upscaler Precise"]],
+      build:(v,m)=>["upscale",{model:m, input_video_url:v.video, resolution:v.target==="4k"?"4K":"1080p"}], poll:"hedra"},
+     {svc:"opus", off:true, models:[["clip","חיתוך לקליפים"]],
+      build:(v)=>["opusclip_submit_project",{videoUrl:v.video, aspectRatio:v.opusar}], poll:null}
+   ]}
+];
+
+/* ---------- state ---------- */
+const vals = store.get("studio2.vals", {});
+const picks = store.get("studio2.picks", {});
+let takes = store.get("studio2.takes", []);
+let room = store.get("studio2.room", "t2v");
+let filter = "all";
 let mcp = null;
-const serverStatus = {};
+let voices = [];
+const saveTakes = ()=>store.set("studio2.takes", takes.slice(0,60));
+const V = (r,f)=>{ vals[r]=vals[r]||{}; if(vals[r][f.id]===undefined) vals[r][f.id]= f.value!==undefined?f.value : f.opts? (Array.isArray(f.opts[0])?f.opts[0][0]:f.opts[0]) : ""; return vals[r][f.id]; };
+const setV = (r,id,v)=>{ vals[r][id]=v; store.set("studio2.vals", vals); };
 
 /* ---------- timecode ---------- */
-const t0 = Date.now();
-setInterval(()=>{
-  const ms = Date.now()-t0, f=Math.floor((ms%1000)/40), s=Math.floor(ms/1000);
-  const p=n=>String(n).padStart(2,"0");
-  $("#tc").textContent = `TC ${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(f)}`;
-}, 200);
+const t0=Date.now();
+setInterval(()=>{ const ms=Date.now()-t0,f=Math.floor((ms%1000)/40),s=Math.floor(ms/1000),p=n=>String(n).padStart(2,"0");
+  $("#tc").textContent=`TC ${p(Math.floor(s/3600))}:${p(Math.floor(s/60)%60)}:${p(s%60)}:${p(f)}`; },200);
 
-/* ---------- segmented controls ---------- */
-function seg(id, key, cast){
-  $(id).addEventListener("click", e=>{
-    const b = e.target.closest("button"); if(!b) return;
-    [...$(id).children].forEach(x=>x.setAttribute("aria-pressed", x===b?"true":"false"));
-    opts[key] = cast ? cast(b.dataset.v) : b.dataset.v;
+/* ---------- media library from finished takes ---------- */
+function library(kinds){
+  const out=[];
+  takes.forEach(t=>(t.media||[]).forEach(m=>{ if(kinds.includes(m.kind)) out.push({...m, from:t.service}); }));
+  return out.slice(0,12);
+}
+
+/* ---------- render rooms ---------- */
+function renderNav(){
+  const nav=$("#rooms"); nav.textContent="";
+  ROOMS.forEach((r,i)=>nav.append(h("button",{type:"button",role:"tab","aria-selected":String(r.id===room), onclick:()=>{ room=r.id; store.set("studio2.room",room); renderNav(); renderRoom(); }},
+    h("span",{class:"n",text:String(i+1).padStart(2,"0")}), r.title)));
+}
+function renderField(r,f){
+  const val=V(r.id,f), id=`${r.id}-${f.id}`;
+  const wrap=h("div",{class:"field"});
+  if (f.type==="seg"){
+    wrap.append(h("span",{class:"label",text:f.label}));
+    const seg=h("div",{class:"seg",role:"group","aria-label":f.label});
+    f.opts.forEach(o=>seg.append(h("button",{type:"button","aria-pressed":String(String(val)===o), onclick:()=>{ setV(r.id,f.id,o); renderRoom(); }}, (f.labels&&f.labels[o])||(o+(f.suffix||"")))));
+    wrap.append(seg);
+  } else if (f.type==="textarea" || f.type==="text"){
+    wrap.append(h("label",{class:"label",for:id,text:f.label}));
+    const el = f.type==="textarea" ? h("textarea",{id}) : h("input",{id,type:"text"});
+    el.value=val; el.addEventListener("input",()=>setV(r.id,f.id,el.value));
+    if (/[֐-׿]/.test(val)===false && f.id==="prompt") el.dir="ltr";
+    wrap.append(el);
+    if (f.hint) wrap.append(h("p",{class:"note",text:f.hint}));
+  } else if (f.type==="select"){
+    wrap.append(h("label",{class:"label",for:id,text:f.label}));
+    const s=h("select",{id}); f.opts.forEach(([v,t])=>{ const o=h("option",{value:v,text:t}); if(v===val) o.selected=true; s.append(o); });
+    s.addEventListener("change",()=>setV(r.id,f.id,s.value)); wrap.append(s);
+  } else if (f.type==="voices"){
+    wrap.append(h("label",{class:"label",for:id,text:f.label}));
+    const s=h("select",{id});
+    const list = voices.length ? voices : [{id:"a56f0ed8-e33c-4d97-af01-3c11c854089a",title:"Noa Levi",subtitle:"Hebrew · Female"},{id:"4817dbc5-066f-4bc7-9f80-8fbf0f9181fc",title:"Avi Katz",subtitle:"Hebrew · Male"}];
+    if (!val) setV(r.id,f.id,list[0].id);
+    list.forEach(v=>{ const o=h("option",{value:v.id,text:`${v.title} · ${(v.subtitle||"").replace(/^deepdub · /,"")}`}); if(v.id===vals[r.id][f.id]) o.selected=true; s.append(o); });
+    s.addEventListener("change",()=>setV(r.id,f.id,s.value));
+    const cur=list.find(v=>v.id===vals[r.id][f.id]);
+    wrap.append(s);
+    if (cur && cur.preview_audio){ const au=h("audio",{controls:true,preload:"none",src:cur.preview_audio}); au.style.width="100%"; wrap.append(au); }
+    wrap.append(h("p",{class:"note",text: voices.length?`${voices.length} קולות בעברית מ־Kolbo`:"טוען קולות בעברית מ־Kolbo…"}));
+  } else if (f.type==="media"){
+    wrap.append(h("label",{class:"label",for:id,text:f.label}));
+    const inp=h("input",{id,type:"url",placeholder:"https://…"}); inp.value=val;
+    inp.addEventListener("input",()=>setV(r.id,f.id,inp.value.trim()));
+    const clr=h("button",{type:"button",class:"btn sm",onclick:()=>{ setV(r.id,f.id,""); renderRoom(); }},"ניקוי");
+    wrap.append(h("div",{class:"pickrow"},inp,clr));
+    const lib=library(f.accept.split(","));
+    if (lib.length){
+      const tp=h("div",{class:"thumbpick","aria-label":"בחירה מהלוח"});
+      lib.forEach(m=>{
+        const pick=()=>{ setV(r.id,f.id,m.url); renderRoom(); };
+        const sel = m.url===val ? "border-color:var(--tally)" : "";
+        if (m.kind==="image"){ const im=h("img",{src:m.url,alt:"תמונה מ־"+m.from,title:m.from,tabindex:"0",onclick:pick,onkeydown:e=>{if(e.key==="Enter")pick();}}); im.style.cssText=sel; tp.append(im); }
+        else if (m.kind==="video"){ const vd=h("video",{src:m.url,muted:true,preload:"metadata",title:m.from,tabindex:"0",onclick:pick,onkeydown:e=>{if(e.key==="Enter")pick();}}); vd.style.cssText=sel; tp.append(vd); }
+        else { const a=h("div",{class:"aud",title:m.from,tabindex:"0",onclick:pick,onkeydown:e=>{if(e.key==="Enter")pick();}},"AUDIO"); a.style.cssText=sel; tp.append(a); }
+      });
+      wrap.append(h("p",{class:"note",text:"או בחירה מהלוח:"}), tp);
+    } else wrap.append(h("p",{class:"note",text:"כשתהיה תוצאה מתאימה בלוח, היא תופיע כאן לבחירה."}));
+  }
+  return wrap;
+}
+function softRenderRoom(){ const a=document.activeElement; if (a && $("#rooms-body").contains(a) && /INPUT|TEXTAREA|SELECT/.test(a.tagName)) return; renderRoom(); }
+function renderRoom(){
+  const r=ROOMS.find(x=>x.id===room)||ROOMS[0];
+  const body=$("#rooms-body"); body.textContent="";
+  const box=h("div",{class:"room"});
+  box.append(h("h2",{text:r.title}), h("p",{class:"intro",text:r.intro}));
+  const segs=r.fields.filter(f=>f.type==="seg"), rest=r.fields.filter(f=>f.type!=="seg");
+  rest.forEach(f=>box.append(renderField(r,f)));
+  if (segs.length) box.append(h("div",{class:"row"},segs.map(f=>renderField(r,f))));
+  // channels
+  picks[r.id]=picks[r.id]||{};
+  const chs=h("div",{class:"channels"});
+  r.channels.forEach(c=>{
+    const p = picks[r.id][c.svc] = picks[r.id][c.svc] || {on:!c.off, model:c.models[0][0]};
+    const cid=`ch-${r.id}-${c.svc}`;
+    const cb=h("input",{type:"checkbox",id:cid}); cb.checked=p.on;
+    const el=h("div",{class:"ch","data-off":String(!p.on)});
+    const w=wallet[c.svc];
+    const lab=h("label",{class:"nm",for:cid}, NAME[c.svc], h("small",{text: w&&w.text?`קרדיטים: ${w.text}`:""}));
+    const sel=h("select",{"aria-label":"מודל עבור "+NAME[c.svc]});
+    c.models.forEach(([v,t])=>{ const o=h("option",{value:v,text:t}); if(v===p.model) o.selected=true; sel.append(o); });
+    cb.addEventListener("change",()=>{ p.on=cb.checked; el.dataset.off=String(!p.on); store.set("studio2.picks",picks); });
+    sel.addEventListener("change",()=>{ p.model=sel.value; store.set("studio2.picks",picks); });
+    el.append(cb,lab,h("span"),sel); chs.append(el);
   });
-}
-seg("#seg-ar","ar"); seg("#seg-dur","dur",Number); seg("#seg-res","res");
-
-/* ---------- channels ---------- */
-function renderChannels(){
-  const box = $("#channels"); box.textContent = "";
-  SERVICES.forEach(s=>{
-    const p = picks[s.key] || {on: s.key!=="openart", model: s.models[0][0]};
-    picks[s.key] = p;
-    const el = document.createElement("div"); el.className="ch"; el.dataset.off = String(!p.on);
-    const cb = document.createElement("input"); cb.type="checkbox"; cb.id="ch-"+s.key; cb.checked=p.on;
-    const lab = document.createElement("label"); lab.className="nm"; lab.htmlFor=cb.id;
-    lab.append(s.name);
-    const sm = document.createElement("small"); sm.textContent = s.blurb; lab.append(sm);
-    const st = document.createElement("small"); st.className="conn"; st.textContent = serverStatus[s.server]||""; lab.append(st);
-    const sel = document.createElement("select"); sel.id="model-"+s.key; sel.setAttribute("aria-label","מודל עבור "+s.name);
-    s.models.forEach(([v,t])=>{ const o=document.createElement("option"); o.value=v; o.textContent=t; if(v===p.model) o.selected=true; sel.append(o); });
-    cb.addEventListener("change",()=>{ p.on=cb.checked; el.dataset.off=String(!p.on); store.set("studio.picks",picks); updateNote(); });
-    sel.addEventListener("change",()=>{ p.model=sel.value; store.set("studio.picks",picks); });
-    el.append(cb, lab, document.createElement("span"), sel);
-    box.append(el);
-  });
-  updateNote();
-}
-function selected(){ return SERVICES.filter(s=>picks[s.key]&&picks[s.key].on); }
-function updateNote(){
-  const n = selected().length;
-  $("#roll-note").textContent = n ? `${n} ערוצים נבחרו` : "בחרו לפחות ערוץ אחד";
-  $("#roll").disabled = !n;
+  box.append(h("div",{class:"field"},h("span",{class:"label",text:r.channels.length>1?"שירותים":"שירות"}),chs));
+  const note=h("span",{class:"note",id:"go-note"});
+  const conf=h("div",{class:"confirm",hidden:true});
+  const go=h("button",{class:"btn primary",type:"button",onclick:()=>{
+    const v=vals[r.id]; const missing=r.fields.filter(f=>!f.optional && (f.type==="media"||f.type==="textarea") && !String(v[f.id]||"").trim());
+    if (missing.length){ note.textContent=`חסר: ${missing.map(f=>f.label).join(", ")}`; return; }
+    const on=r.channels.filter(c=>picks[r.id][c.svc].on);
+    if (!on.length){ note.textContent="בחרו לפחות שירות אחד."; return; }
+    conf.textContent="";
+    conf.append(h("div",{text:`ייצאו ${on.length} בקשות: ${on.map(c=>NAME[c.svc]).join(", ")}. כל שירות יחייב את הקרדיטים שלכם אצלו.`}),
+      h("div",{class:"actions"},
+        h("button",{class:"btn primary",type:"button",onclick:()=>{ conf.hidden=true; on.forEach(c=>run(r,c,{...v},picks[r.id][c.svc].model)); }},"כן, להפיק"),
+        h("button",{class:"btn",type:"button",onclick:()=>{ conf.hidden=true; }},"ביטול")));
+    conf.hidden=false; note.textContent="";
+  }}, "צילום!");
+  box.append(h("div",{class:"actions"},go,note),conf);
+  body.append(box);
 }
 
-/* ---------- result parsing (shapes differ per connector) ---------- */
-function walk(obj, fn, depth=0){
-  if (depth>8 || obj==null) return;
-  if (Array.isArray(obj)) { obj.forEach(v=>walk(v,fn,depth+1)); return; }
-  if (typeof obj==="object") { for (const [k,v] of Object.entries(obj)) { fn(k,v); walk(v,fn,depth+1); } }
-}
-function parsePayload(res){
+/* ---------- result parsing ---------- */
+function payloadOf(res){
   if (!res) return null;
   if (res.payload!==undefined) return res.payload;
-  const t = (res.content||[]).find(c=>c.type==="text");
+  const t=(res.content||[]).find(c=>c.type==="text");
   if (t){ try{ return JSON.parse(t.text); }catch(e){ return t.text; } }
   return res;
 }
-function findId(p, keys){
-  if (typeof p==="string"){ const m=p.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i); return m?m[0]:null; }
-  for (const k of keys){ let hit=null; walk(p,(kk,v)=>{ if(hit==null && kk===k && (typeof v==="string"||typeof v==="number")) hit=String(v); }); if(hit) return hit; }
+function walk(o,fn,d=0,parent=null){
+  if (d>9||o==null) return;
+  if (Array.isArray(o)){ o.forEach(v=>walk(v,fn,d+1,parent)); return; }
+  if (typeof o==="object"){ for (const [k,v] of Object.entries(o)){ fn(k,v,o); walk(v,fn,d+1,o); } }
+}
+function findId(p){
+  if (typeof p==="string"){ const m=p.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i)||p.match(/\b(?:job|generation|history)[_ ]?id["':\s]+([\w-]+)/i); return m?(m[1]||m[0]):null; }
+  for (const k of ID_KEYS){ let hit=null; walk(p,(kk,v)=>{ if(hit==null&&kk===k&&(typeof v==="string"||typeof v==="number")&&String(v).length>2) hit=String(v); }); if(hit) return hit; }
   return null;
 }
-const VID_RE = /https?:\/\/[^\s"'<>)]+?\.(?:mp4|webm|mov|m3u8)(?:\?[^\s"'<>)]*)?/i;
-function findVideo(p){
-  const s = typeof p==="string" ? p : JSON.stringify(p);
-  const m = s && s.match(VID_RE); return m ? m[0] : null;
+const EXT = { video:/\.(mp4|webm|mov|m3u8)(\?|$)/i, image:/\.(png|jpe?g|webp|gif|avif)(\?|$)/i, audio:/\.(mp3|wav|m4a|ogg|aac|flac)(\?|$)/i };
+const SKIP = /(thumb|thumbnail|icon|avatar|logo|preview_image|poster)/i;
+function kindOf(url, key, obj){
+  const ct = obj && (obj.content_type||obj.contentType||obj.mime_type||obj.mimeType||obj.media_type||obj.type);
+  if (typeof ct==="string"){ if(/video/i.test(ct)) return "video"; if(/image/i.test(ct)) return "image"; if(/audio/i.test(ct)) return "audio"; }
+  for (const k of ["video","image","audio"]) if (EXT[k].test(url)) return k;
+  if (/video/i.test(key)) return "video"; if (/image|img/i.test(key)) return "image"; if (/audio|music|speech|sound|track/i.test(key)) return "audio";
+  return null;
 }
-function findLink(p){
-  let hit=null;
-  walk(p,(k,v)=>{ if(!hit && typeof v==="string" && /^https?:\/\//.test(v) && /(url|link|watch|share|output|video)/i.test(k)) hit=v; });
-  return hit;
+function findMedia(p, expect, exclude){
+  const seen=new Set(exclude||[]), out=[];
+  const add=(url,key,obj)=>{ if(seen.has(url)) return; if(SKIP.test(key||"")) return; const k=kindOf(url,key||"",obj); if(!k) return; seen.add(url); out.push({url,kind:k}); };
+  if (typeof p==="string"){ (p.match(/https?:\/\/[^\s"'<>)\]]+/g)||[]).forEach(u=>add(u,"",null)); }
+  else walk(p,(k,v,obj)=>{ if(typeof v==="string"&&/^https?:\/\//.test(v)) add(v,k,obj); });
+  // prefer the kind the room expects; drop unrelated extras (e.g. the input image echoed back)
+  return out.filter(m=>m.kind===expect);
 }
 function findStatus(p){
   let st=null;
-  walk(p,(k,v)=>{ if(!st && /^(status|state)$/i.test(k) && typeof v==="string") st=v; });
+  walk(p,(k,v)=>{ if(!st && /^(status|state|stage)$/i.test(k) && typeof v==="string") st=v; });
   if (!st && typeof p==="string"){ const m=p.match(/\b(completed|failed|succeeded|processing|pending|queued|running)\b/i); if(m) st=m[1]; }
-  return st ? st.toLowerCase() : null;
+  return st?st.toLowerCase():null;
 }
-const DONE = /^(completed|complete|succeeded|success|done|finished)$/;
-const FAIL = /^(failed|failure|error|cancelled|canceled|rejected)$/;
-
-/* ---------- errors ---------- */
-function errText(e, server){
-  const c = e && e.code;
+const DONE=/^(completed|complete|succeeded|success|done|finished)$/, FAIL=/^(failed|failure|error|cancelled|canceled|rejected|expired)$/;
+function errText(e, svc){
+  const n=NAME[svc]||svc, c=e&&e.code;
   switch(c){
-    case "server_not_connected": return `${server} לא מחובר לחשבון. הוסיפו אותו בהגדרות claude.ai ← Connectors.`;
-    case "needs_reauth": return `פג תוקף ההתחברות ל־${server}. התחברו מחדש בהגדרות claude.ai ← Connectors.`;
-    case "selection_required": return `יש יותר מקונקטור אחד בשם ${server}. בחרו אחד בחלון ש־Claude פתח.`;
-    case "not_in_manifest": return `לא אישרתם לדף הזה להשתמש ב־${server}. אפשר לאשר בטעינה הבאה.`;
-    case "blocked_by_policy": case "approval_required": return `מדיניות הארגון חוסמת את ${server} בדף הזה.`;
-    case "server_unavailable": return `${server} לא ענה. ייתכן שהבקשה בכל זאת נקלטה, אז בדקו בשירות עצמו לפני שתשלחו שוב.`;
-    case "tool_error": return `${server} דחה את הבקשה: ${e.message||""}`;
+    case "server_not_connected": return `${n} לא מחובר לחשבון. הוסיפו אותו בהגדרות claude.ai ← Connectors.`;
+    case "needs_reauth": return `פג תוקף ההתחברות ל־${n}. התחברו מחדש בהגדרות claude.ai ← Connectors.`;
+    case "selection_required": return `יש יותר מקונקטור אחד בשם ${n}. בחרו אחד בחלון ש־Claude פתח.`;
+    case "not_in_manifest": return `לא אישרתם לדף להשתמש ב־${n}. אפשר לאשר בטעינה הבאה.`;
+    case "blocked_by_policy": case "approval_required": return `מדיניות הארגון חוסמת את ${n} בדף הזה.`;
+    case "server_unavailable": return `${n} לא ענה בזמן. ייתכן שהבקשה נקלטה בכל זאת, אז בדקו בשירות לפני שתשלחו שוב.`;
+    case "tool_error": return `${n} דחה את הבקשה: ${(e.message||"").slice(0,400)}`;
     case "not_granted": case "capability_disabled": case "capability_removed": return "הקונקטורים לא זמינים בתצוגה הזו.";
-    default: return `שגיאה מ־${server}: ${(e&&e.message)||c||"לא ידועה"}`;
+    default: return `שגיאה מ־${n}: ${(e&&e.message)||c||"לא ידועה"}`;
   }
+}
+function rawOf(p){ try{ const s=typeof p==="string"?p:JSON.stringify(p,null,2); return s.length>5000?s.slice(0,5000)+"\n…":s; }catch(e){ return String(p); } }
+
+/* ---------- run & poll ---------- */
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function update(t,patch){ Object.assign(t,patch); saveTakes(); renderBoard(); if(patch.state==="done") softRenderRoom(); }
+async function run(r, c, v, model){
+  const [tool,input]=c.build(v,model);
+  const pollKey = c.pollFor ? c.pollFor(v) : c.poll;
+  const summary = v.prompt||v.text||v.video||v.source||"";
+  const inputs=Object.values(v).filter(x=>typeof x==="string"&&/^https?:\/\//.test(x));
+  const t={ inputs, id:Date.now()+"-"+Math.random().toString(36).slice(2,6), svc:c.svc, service:NAME[c.svc], room:r.id, roomTitle:r.title, expect:r.id==="story"&&v.mode==="image"?"image":r.kind, model, prompt:String(summary).slice(0,300), state:"run", phase:"נשלח", pollKey, created:Date.now() };
+  takes.unshift(t); saveTakes(); renderBoard();
+  if (!mcp){ update(t,{state:"error",error:"הקונקטורים לא זמינים בתצוגה הזו."}); return; }
+  let p;
+  try{ p=payloadOf(await mcp.callTool(SRV[c.svc], tool, input, {cache:false})); }
+  catch(e){ update(t,{state:"error",error:errText(e,c.svc),raw:e&&e.result?rawOf(e.result):""}); refreshWallet(c.svc); return; }
+  const media=findMedia(p,t.expect,t.inputs), st=findStatus(p);
+  if (media.length && !(st && /process|pend|queue|run/.test(st))){ update(t,{state:"done",media,raw:rawOf(p)}); refreshWallet(c.svc); return; }
+  if (st && FAIL.test(st)){ update(t,{state:"error",error:`${t.service} דיווח שהעבודה נכשלה.`,raw:rawOf(p)}); return; }
+  const jid=findId(p);
+  if (!pollKey){ update(t,{state:"done",raw:rawOf(p),note: jid?`הפרויקט נקלט (מזהה ${jid}). התוצאות יופיעו בחשבון ${t.service}.`:"הבקשה נשלחה."}); return; }
+  if (!jid){ update(t,{state:"error",error:"השירות קיבל את הבקשה אבל לא החזיר מזהה עבודה. בדקו את התוצאה באתר של השירות.",raw:rawOf(p)}); return; }
+  update(t,{phase:"בתור",jobId:jid,raw:rawOf(p)});
+  pollLoop(t);
+}
+async function pollLoop(t){
+  const blocking=BLOCKING_POLL.has(t.pollKey);
+  for (let i=0;i<60;i++){
+    if (!blocking) await sleep(12000+Math.random()*5000);
+    let p;
+    try{ const [tool,input]=POLL[t.pollKey](t.jobId); p=payloadOf(await mcp.callTool(SRV[t.svc],tool,input,{cache:false})); }
+    catch(e){ if(e&&e.retryable){ await sleep(e.retryAfterMs||8000); continue; } update(t,{state:"error",error:errText(e,t.svc)}); return; }
+    const media=findMedia(p,t.expect,t.inputs), st=findStatus(p);
+    if (st && FAIL.test(st)){ update(t,{state:"error",error:`${t.service} דיווח שהעבודה נכשלה.`,raw:rawOf(p)}); refreshWallet(t.svc); return; }
+    if ((st && DONE.test(st)) || (media.length && !st)){
+      update(t,{state:"done",media,raw:rawOf(p),error:media.length?"":"העבודה הסתיימה אבל לא נמצא קובץ. פתחו את התשובה המלאה."}); refreshWallet(t.svc); return;
+    }
+    update(t,{phase:st?"בהפקה · "+st:"בהפקה",raw:rawOf(p), media: media.length?media:t.media});
+    if (blocking) await sleep(2500);
+  }
+  update(t,{state:"error",error:"עבר זמן רב מדי. העבודה אולי עוד רצה, בדקו באתר של השירות."});
 }
 
 /* ---------- board ---------- */
-function saveTakes(){ store.set("studio.takes", takes.slice(0,40)); }
+const NEXT = {
+  image:[["הנפשה","i2v","image"],["ליפסינק","lip","source"]],
+  video:[["מוזיקה לסרטון","music","video"],["שדרוג","up","video"],["ליפסינק","lip","source"]],
+  audio:[["ליפסינק","lip","audio"]]
+};
+function sendTo(roomId, field, url){ vals[roomId]=vals[roomId]||{}; setV(roomId,field,url); room=roomId; store.set("studio2.room",room); renderNav(); renderRoom(); $("#rooms").scrollIntoView({behavior:"smooth",block:"start"}); }
+function copy(text, btn){
+  const done=()=>{ const o=btn.textContent; btn.textContent="הועתק"; setTimeout(()=>btn.textContent=o,1400); };
+  try{ navigator.clipboard.writeText(text).then(done,()=>{}); }catch(e){}
+}
 function renderBoard(){
-  const b = $("#board"); b.textContent="";
-  if (!takes.length){
-    const e=document.createElement("div"); e.className="empty";
-    e.textContent="עדיין אין טייקים. כתבו פרומפט, בחרו ערוצים ולחצו על צילום. כל ערוץ יופיע כאן עם הסטטוס שלו, ואחר כך עם הסרטון.";
-    b.append(e); return;
+  const b=$("#board"); b.textContent="";
+  const list=takes.filter(t=>filter==="all"||t.expect===filter);
+  if (!list.length){
+    b.append(h("div",{class:"empty",text: takes.length?"אין תוצאות מהסוג הזה.":"עדיין אין תוצאות. בחרו חדר עבודה, מלאו את ההגדרות ולחצו על צילום. כל שירות יופיע כאן עם הסטטוס שלו, ואחר כך עם הקובץ."}));
+    return;
   }
-  takes.forEach(t=>{
-    const el=document.createElement("article"); el.className="take";
-    const h=document.createElement("div"); h.className="take-h";
-    const who=document.createElement("span"); who.className="who"; who.textContent=t.service;
-    const meta=document.createElement("span"); meta.className="meta"; meta.textContent=`${t.model} · ${t.ar} · ${t.dur}s · ${t.res}`;
-    const chip=document.createElement("span"); chip.className="chip "+(t.state==="done"?"ok":t.state==="error"?"bad":"run");
-    chip.textContent = t.state==="done"?"מוכן":t.state==="error"?"נכשל":(t.phase||"בהפקה");
-    const left=document.createElement("div"); left.style.cssText="display:flex;gap:10px;align-items:center;flex-wrap:wrap"; left.append(who,chip);
-    h.append(left,meta); el.append(h);
-    const pr=document.createElement("p"); pr.className="pr"; pr.dir="ltr"; pr.textContent=t.prompt; el.append(pr);
-    if (t.video){
-      const v=document.createElement("video"); v.src=t.video; v.controls=true; v.playsInline=true; v.preload="metadata"; el.append(v);
+  list.forEach(t=>{
+    const chip=h("span",{class:"chip "+(t.state==="done"?"ok":t.state==="error"?"bad":"run"),text:t.state==="done"?"מוכן":t.state==="error"?"נכשל":(t.phase||"בהפקה")});
+    const el=h("article",{class:"take"},
+      h("div",{class:"take-h"}, h("div",{class:"who"},t.service,h("span",{class:"kind",text:t.roomTitle}),chip), h("span",{class:"meta",text:t.model})));
+    if (t.prompt) el.append(h("p",{class:"pr",dir:/[֐-׿]/.test(t.prompt)?"rtl":"ltr",text:t.prompt}));
+    const media=t.media||[];
+    if (media.length){
+      const g=h("div",{class:"media"+(media.length===1?" one":"")});
+      media.slice(0,8).forEach(m=>{
+        const it=h("div",{class:"item"});
+        if (m.kind==="video") it.append(h("video",{src:m.url,controls:true,playsinline:true,preload:"metadata"}));
+        else if (m.kind==="image") it.append(h("img",{src:m.url,alt:t.prompt.slice(0,80),loading:"lazy"}));
+        else it.append(h("audio",{src:m.url,controls:true,preload:"metadata"}));
+        const acts=h("div",{class:"itemacts"});
+        (NEXT[m.kind]||[]).forEach(([lbl,rid,fid])=>acts.append(h("button",{class:"btn sm",type:"button",onclick:()=>sendTo(rid,fid,m.url)},lbl+" ←")));
+        acts.append(h("a",{href:m.url,target:"_blank",rel:"noopener",class:"btn sm",style:"text-decoration:none"},"פתיחה"));
+        const cp=h("button",{class:"btn sm",type:"button"},"העתקת קישור"); cp.addEventListener("click",()=>copy(m.url,cp)); acts.append(cp);
+        it.append(acts); g.append(it);
+      });
+      el.append(g);
     }
-    if (t.video || t.link){
-      const ls=document.createElement("div"); ls.className="links";
-      const a=document.createElement("a"); a.href=t.video||t.link; a.target="_blank"; a.rel="noopener"; a.textContent="פתיחה בלשונית חדשה"; ls.append(a);
-      const u=document.createElement("a"); u.href="#cut-h"; u.textContent="לחיתוך ב־OpusClip";
-      u.addEventListener("click",()=>{ $("#opus-url").value=t.video||t.link; });
-      ls.append(u); el.append(ls);
-    }
-    if (t.error){ const er=document.createElement("div"); er.className="err"; er.textContent=t.error; el.append(er); }
-    if (t.raw){
-      const d=document.createElement("details"); d.className="raw";
-      const s=document.createElement("summary"); s.textContent="התשובה המלאה מהשירות"; const pre=document.createElement("pre"); pre.textContent=t.raw;
-      d.append(s,pre); el.append(d);
-    }
+    if (t.note) el.append(h("p",{class:"note",text:t.note}));
+    if (t.error) el.append(h("div",{class:"err",text:t.error}));
+    if (t.raw) el.append(h("details",{class:"raw"},h("summary",{text:"התשובה המלאה מהשירות"}),h("pre",{text:t.raw})));
     b.append(el);
   });
 }
-function update(t, patch){ Object.assign(t, patch); saveTakes(); renderBoard(); }
-function rawOf(p){ try{ const s = typeof p==="string"?p:JSON.stringify(p,null,2); return s.length>6000?s.slice(0,6000)+"\n…":s; }catch(e){ return String(p); } }
+$("#filters").addEventListener("click",e=>{ const bt=e.target.closest("button"); if(!bt) return; filter=bt.dataset.f; [...$("#filters").children].forEach(x=>x.setAttribute("aria-pressed",String(x===bt))); renderBoard(); });
+$("#clear").addEventListener("click",()=>{ takes=takes.filter(t=>t.state==="run"); saveTakes(); renderBoard(); renderRoom(); });
 
-/* ---------- run ---------- */
-async function runOne(s, o){
-  const t = { id: Date.now()+"-"+s.key, service:s.name, key:s.key, model:o.model, ar:o.ar, dur:o.dur, res:o.res, prompt:o.prompt, state:"run", phase:"נשלח" };
-  takes.unshift(t); saveTakes(); renderBoard();
-  if (!mcp){ update(t,{state:"error", error:"הקונקטורים לא זמינים בתצוגה הזו."}); return; }
-  const req = s.submit(o);
-  let p;
-  try{
-    const res = await mcp.callTool(s.server, req.tool, req.input, {cache:false});
-    p = parsePayload(res);
-  }catch(e){ update(t,{state:"error", error:errText(e,s.name), raw:e&&e.result?rawOf(e.result):""}); return; }
-  const v = findVideo(p);
-  if (v){ update(t,{state:"done", video:v, raw:rawOf(p)}); return; }
-  const jid = findId(p, s.idKeys);
-  update(t,{phase:"בתור", jobId:jid, raw:rawOf(p)});
-  if (!jid){ update(t,{state:"error", error:"השירות קיבל את הבקשה אבל לא החזיר מזהה עבודה. בדקו את התוצאה באתר של השירות.", link:findLink(p)}); return; }
-  pollLoop(s, t);
+/* ---------- wallet ---------- */
+const wallet={};
+const WALLET = {
+  kolbo:  ["check_credits", p=>{ const c=p&&p.credits; const n=c&&c.total; return n==null?null:{n, text:`${n}`}; }, 30],
+  bp:     ["get_credit_balance", p=>{ const n=p&&p.total_available; return n==null?null:{n, text:`${n}`}; }, 300],
+  hedra:  ["get_balance", p=>{ const b=p&&p.balance; if(!b) return null; const usd=b.billing_mode==="usd"; const n=usd?(b.api_wallet&&b.api_wallet.balance):(b.credits&&b.credits.available); return n==null?null:{n, text: usd?`$${n}`:`${n}`}; }, usd=>1],
+  openart:["openart_account_get", p=>{ const n=p&&p.credits; return n==null?null:{n, text:`${n}`}; }, 50]
+};
+function renderWallet(){
+  const w=$("#wallet"); w.textContent="";
+  ["kolbo","bp","hedra","openart","krea","opus"].forEach(s=>{
+    const x=wallet[s]||{};
+    const st = x.n==null ? "" : x.n<=0 ? "empty" : x.n < (x.low||0) ? "low" : "ok";
+    const v = s==="krea" ? "ללא בדיקת יתרה" : s==="opus" ? (x.text||"דורש מנוי Pro") : (x.text!=null ? x.text : x.err || "…");
+    w.append(h("div",{class:"w","data-s":st},h("b",{text:NAME[s]}),h("span",{class:"v",text:v}),
+      WALLET[s]?h("button",{type:"button","aria-label":"רענון "+NAME[s],onclick:()=>refreshWallet(s)},"↻"):null));
+  });
 }
-async function pollLoop(s, t){
-  for (let i=0; i<45; i++){
-    if (s.key!=="kolbo" && s.key!=="hedra") await new Promise(r=>setTimeout(r, 15000 + Math.random()*4000));
-    let p;
-    try{
-      const q = s.poll(t.jobId);
-      p = parsePayload(await mcp.callTool(s.server, q.tool, q.input, {cache:false}));
-    }catch(e){
-      if (e && e.retryable){ await new Promise(r=>setTimeout(r, e.retryAfterMs||8000)); continue; }
-      update(t,{state:"error", error:errText(e,s.name)}); return;
-    }
-    const v = findVideo(p), st = findStatus(p);
-    if (v){ update(t,{state:"done", video:v, raw:rawOf(p)}); return; }
-    if (st && FAIL.test(st)){ update(t,{state:"error", error:`${s.name} דיווח שהעבודה נכשלה.`, raw:rawOf(p)}); return; }
-    if (st && DONE.test(st)){ update(t,{state:"done", link:findLink(p), raw:rawOf(p), error: findLink(p)?"":"העבודה הסתיימה אבל לא נמצא קישור לסרטון. פתחו את התשובה המלאה."}); return; }
-    update(t,{phase: st ? "בהפקה · "+st : "בהפקה", raw:rawOf(p)});
-    if (s.key==="kolbo" || s.key==="hedra") await new Promise(r=>setTimeout(r, 3000));
-  }
-  update(t,{state:"error", error:"עבר זמן רב מדי. העבודה אולי עוד רצה, בדקו באתר של השירות."});
-}
-
-/* ---------- roll with inline confirm ---------- */
-$("#roll").addEventListener("click",()=>{
-  const prompt=$("#prompt").value.trim();
-  if (!prompt){ $("#roll-note").textContent="כתבו פרומפט קודם."; return; }
-  const list = selected().map(s=>s.name).join(", ");
-  $("#confirm-text").textContent = `ייצאו ${selected().length} הפקות במקביל (${list}), ${opts.dur} שניות ב־${opts.res}. כל שירות יחייב את הקרדיטים שלכם אצלו.`;
-  $("#confirm").hidden=false;
-});
-$("#confirm-no").addEventListener("click",()=>{ $("#confirm").hidden=true; });
-$("#confirm-yes").addEventListener("click",()=>{
-  $("#confirm").hidden=true;
-  const prompt=$("#prompt").value.trim();
-  selected().forEach(s=>runOne(s, {prompt, model:picks[s.key].model, ar:opts.ar, dur:opts.dur, res:opts.res}));
-});
-$("#clear").addEventListener("click",()=>{ takes = takes.filter(t=>t.state==="run"); saveTakes(); renderBoard(); });
-
-/* ---------- OpusClip ---------- */
-$("#opus-go").addEventListener("click", async ()=>{
-  const url=$("#opus-url").value.trim(), out=$("#opus-out");
-  if (!/^https?:\/\//.test(url)){ out.textContent="הדביקו קישור מלא שמתחיל ב־https://"; return; }
-  if (!mcp){ out.textContent="הקונקטורים לא זמינים בתצוגה הזו."; return; }
-  $("#opus-go").disabled=true; out.textContent="שולח ל־OpusClip…";
+async function refreshWallet(s){
+  if (!mcp || !WALLET[s]) return;
+  const [tool,parse,low]=WALLET[s];
   try{
-    const p = parsePayload(await mcp.callTool("OpusClip","opusclip_submit_project",{videoUrl:url, aspectRatio:$("#opus-ar").value},{cache:false}));
-    const id = findId(p,["projectId","project_id","id"]);
-    out.textContent = id ? `הפרויקט נקלט (מזהה ${id}). OpusClip יעבד אותו בדקות הקרובות, והקליפים יופיעו בחשבון OpusClip שלכם.` : "הבקשה נשלחה. הקליפים יופיעו בחשבון OpusClip שלכם.";
-  }catch(e){ out.textContent = errText(e,"OpusClip"); }
-  finally{ $("#opus-go").disabled=false; }
-});
+    const p=payloadOf(await mcp.callTool(SRV[s],tool,{}, {cache:false}));
+    const r=parse(p); wallet[s] = r ? {...r, low: typeof low==="function"?low():low} : {text:"?"};
+  }catch(e){ wallet[s]={err: e&&e.code==="server_not_connected"?"לא מחובר": e&&e.code==="needs_reauth"?"צריך להתחבר":"לא זמין"}; }
+  renderWallet(); softRenderRoom();
+}
 
 /* ---------- boot ---------- */
-renderChannels(); renderBoard();
-// resume polling for takes that were in flight when the page closed
-function resume(){
-  takes.filter(t=>t.state==="run" && t.jobId).forEach(t=>{ const s=SERVICES.find(x=>x.key===t.key); if(s) pollLoop(s,t); });
-}
-(async ()=>{
+renderNav(); renderRoom(); renderBoard(); renderWallet();
+(async()=>{
   try{ mcp = window.claude && await window.claude.use("mcp"); }catch(e){ mcp=null; }
   if (!mcp){ $("#nomcp").hidden=false; return; }
+  Object.keys(WALLET).forEach(refreshWallet);
+  // resume jobs that were in flight when the page closed
+  takes.filter(t=>t.state==="run"&&t.jobId&&t.pollKey).forEach(pollLoop);
+  takes.filter(t=>t.state==="run"&&!t.jobId).forEach(t=>{ t.state="error"; t.error="הדף נסגר לפני שהשירות החזיר מזהה עבודה. בדקו באתר של השירות."; });
+  saveTakes(); renderBoard();
+  // Hebrew voices from Kolbo
   try{
-    const lt = await mcp.listTools();
-    const have = new Set((lt.servers||[]).map(x=>x.server));
-    SERVICES.concat([{server:"OpusClip"}]).forEach(s=>{
-      const sv=(lt.servers||[]).find(x=>x.server===s.server);
-      serverStatus[s.server] = !have.has(s.server) ? "לא מחובר" : sv.authStatus==="needs_reauth" ? "צריך להתחבר מחדש" : sv.authStatus==="connected" ? "מחובר" : "";
-    });
-    renderChannels();
+    const acc=[];
+    for (let page=1; page<=3; page++){
+      const p=payloadOf(await mcp.callTool(SRV.kolbo,"list_voices",{language:"hebrew",limit:60,page},{cache:{staleTime:300000,gcTime:86400000}}));
+      (p&&p.items||[]).forEach(v=>acc.push(v));
+      if (!(p&&p.has_more)) break;
+    }
+    if (acc.length){ voices=acc; if(room==="voice") softRenderRoom(); }
   }catch(e){}
-  resume();
 })();
 })();
 </script>
