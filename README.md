@@ -42,3 +42,22 @@ src/
 ```
 
 הייצוא מוקלט בזמן אמת, כך שסרטון של 15 שניות לוקח 15 שניות. הלשונית צריכה להישאר פתוחה ומוצגת בזמן הייצוא.
+
+## Higgsfield API (Seedance 2.5)
+
+`index.ts` is a server-side example that generates a video with `bytedance/seedance-2.5/text-to-video`
+through the official SDK (`@higgsfield/client/v2`, method `subscribe`).
+
+1. Create a key in the Higgsfield console.
+2. Put it in `.env.local`, which is ignored by Git and never committed:
+   ```
+   HF_CREDENTIALS=key-id:key-secret
+   ```
+3. Run it (this is a billable generation):
+   ```bash
+   npm run generate
+   ```
+
+The script waits up to 20 minutes and prints the video URL. If the request fails, is rejected by
+moderation, or is canceled, it exits with code 1 and never reports success.
+The key stays on the server: the SDK blocks browser use, and the Vite app never reads it.
