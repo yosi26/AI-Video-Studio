@@ -1,0 +1,15 @@
+{
+  "name": "ai-video-studio",
+  "version": "0.1.0",
+  "description": "AI video generator - create cinematic videos from text using Seedance 2.5 (Higgsfield API)",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.9"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server.js",
+    "generate": "node --env-file-if-exists=.env scripts/generate.js",
+    "test": "node --test"
+  }
+}
