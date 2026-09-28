@@ -1,0 +1,13 @@
+{
+  "name": "ai-video-studio",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Free promo video generator for small businesses (HTML animation -> MP4)",
+  "scripts": {
+    "render": "node src/render.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}
