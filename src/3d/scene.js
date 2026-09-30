@@ -53,10 +53,37 @@ function lineShapes(line, size) {
       else if (c.type === "Q") sp.quadraticCurveTo(c.x1, -c.y1, c.x, -c.y);
       else if (c.type === "C") sp.bezierCurveTo(c.x1, -c.y1, c.x2, -c.y2, c.x, -c.y);
     }
-    shapes.push(...sp.toShapes(true));
+    shapes.push(...glyphShapes(sp));
     x += (glyph.advanceWidth || font.unitsPerEm * 0.3) * size / font.unitsPerEm;
   }
   return { shapes, width: x };
+}
+
+// Font winding differs between subsets, so classify contours by nesting instead:
+// a contour inside an odd number of others is a hole of its innermost container.
+function inside(pt, poly) {
+  let c = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const a = poly[i], b = poly[j];
+    if ((a.y > pt.y) !== (b.y > pt.y) && pt.x < (b.x - a.x) * (pt.y - a.y) / (b.y - a.y) + a.x) c = !c;
+  }
+  return c;
+}
+function glyphShapes(sp) {
+  const polys = sp.subPaths.map(p => p.getPoints());
+  const parents = polys.map((poly, i) => polys.map((other, j) => j !== i && inside(poly[0], other) ? j : -1).filter(j => j >= 0));
+  const shapes = new Map();
+  polys.forEach((poly, i) => {
+    if (parents[i].length % 2 === 0) shapes.set(i, new THREE.Shape(THREE.ShapeUtils.isClockWise(poly) ? poly.slice().reverse() : poly));
+  });
+  polys.forEach((poly, i) => {
+    if (parents[i].length % 2 === 0) return;
+    // innermost container = the parent with the most parents of its own
+    const host = parents[i].reduce((a, b) => parents[b].length > parents[a].length ? b : a);
+    const hole = new THREE.Path(THREE.ShapeUtils.isClockWise(poly) ? poly : poly.slice().reverse());
+    shapes.get(host)?.holes.push(hole);
+  });
+  return [...shapes.values()];
 }
 
 // Returns a Group of extruded lines, centered, one mesh per line (so lines can animate separately).
