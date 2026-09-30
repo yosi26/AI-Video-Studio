@@ -11,4 +11,10 @@ AI video generator - create cinematic videos from text and images
 3. יצירה: `npm run render`. הקובץ נשמר ב-`output/promo.mp4`.
    תצוגה מהירה של פריימים בודדים: `PREVIEW=2,7,12 npm run render`.
 
+### גרסת תלת־ממד (WebGL)
+
+`npm run render:3d`: אותו `business.json`, עם טקסט תלת־ממדי מתכתי של שם העסק, מצלמה שעפה בין הסצנות, חלקיקים, התפוצצות ותאורה דינמית.
+הקובץ נשמר ב-`output/promo-3d.mp4`. תצוגה מהירה: `PREVIEW=3,12,22 npm run render:3d`.
+הרינדור נעשה בתוכנה (SwiftShader), ולוקח כ-12 דקות בלי כרטיס מסך.
+
 הגופן Heebo מופץ תחת רישיון SIL OFL (`assets/fonts/OFL-LICENSE.txt`).
