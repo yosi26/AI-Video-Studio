@@ -81,6 +81,9 @@
     padding: 10px 14px; border-radius: 0 6px 6px 0;
   }
 
+  .cheaper { margin: 0; font-size: .85rem; color: var(--muted); }
+  .cheaper b { color: var(--ink); font-weight: 600; }
+
   /* Viewfinder */
   .viewfinder { background: var(--frame); border-radius: 10px; padding: 14px; color: #E9E4DC; }
   .screen {
@@ -245,6 +248,7 @@
           <button class="primary" type="submit">צור סרטון</button>
           <span class="cost" id="cost" aria-live="polite"></span>
         </div>
+        <p class="cheaper" id="cheaper" hidden></p>
         <p class="note" id="note" hidden>הממשק עוד בבנייה. בינתיים יוצרים סרטונים דרך הצ'אט עם Claude: מעתיקים את הפרומפט ושולחים אותו.</p>
       </form>
     </div>
@@ -417,6 +421,25 @@
     } else {
       cost.textContent = "מחיר בקרדיטים, דרך " + m.via;
     }
+    // Same length for less: cheapest 720p+ options that support this duration
+    const secs = Number(dur.value);
+    const total = m.usd && m.usd[res.value] != null ? m.usd[res.value] * secs : null;
+    const alt = [];
+    for (const x of M) {
+      if (!x.usd || x.t.includes("v") || x.max < secs || x.name === m.name) continue;
+      for (const [r, v] of Object.entries(x.usd)) {
+        if (parseInt(r) >= 720 || r === "4K" || r === "2K") alt.push({ n: x.name, r, c: v * secs });
+      }
+    }
+    alt.sort((a, b) => a.c - b.c);
+    const seen = new Set(), top = [];
+    for (const a of alt) { if (!seen.has(a.n)) { seen.add(a.n); top.push(a); } if (top.length === 3) break; }
+    const ch = $("cheaper");
+    if (total != null && total > 5 && top.length && top[0].c < total) {
+      ch.innerHTML = "אותו אורך בזול יותר: " + top.map((a) => "<b></b> " + a.r + " ‏$" + a.c.toFixed(2)).join(" · ");
+      ch.querySelectorAll("b").forEach((b, i) => { b.textContent = top[i].n; });
+      ch.hidden = false;
+    } else ch.hidden = true;
     document.querySelectorAll(".card").forEach((c) => c.setAttribute("aria-pressed", String(c.dataset.name === model.value)));
   }
   model.addEventListener("change", () => { fillOptions(); update(); });
