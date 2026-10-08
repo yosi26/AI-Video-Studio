@@ -1,0 +1,312 @@
+<title>AI Video Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a screening-room page — the hero pairs a "camera" control panel with a 16:9 viewfinder; below, the process and a model spec sheet */
+  :root {
+    --bg: #EAECEF;
+    --surface: #FFFFFF;
+    --ink: #121419;
+    --muted: #59616D;
+    --line: #D3D7DD;
+    --accent: #C2410C;
+    --accent-ink: #FFFFFF;
+    --frame: #0E1015;
+    --font-display: "Karantina", "Arial Narrow", sans-serif;
+    --font-body: "IBM Plex Sans Hebrew", "Arial Hebrew", "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #101217; --surface: #181B22; --ink: #ECEEF2; --muted: #9AA2AE;
+      --line: #2A2F39; --accent: #F07A3A; --accent-ink: #14100D; --frame: #05060A;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #101217; --surface: #181B22; --ink: #ECEEF2; --muted: #9AA2AE;
+    --line: #2A2F39; --accent: #F07A3A; --accent-ink: #14100D; --frame: #05060A;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font-family: var(--font-body); font-size: 16px; line-height: 1.6;
+    direction: rtl;
+  }
+  .wrap { max-width: 1120px; margin: 0 auto; padding-inline: 20px; padding-block: 0 48px; }
+
+  header.top {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-block: 20px; border-bottom: 1px solid var(--line);
+  }
+  .brand { font-family: var(--font-display); font-size: 2rem; font-weight: 700; letter-spacing: .02em; line-height: 1; }
+  .brand span { color: var(--accent); }
+  .chip {
+    font-family: var(--font-mono); font-size: .75rem; letter-spacing: .06em;
+    border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; color: var(--muted);
+  }
+
+  .hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 40px; padding-block: 48px 56px; align-items: start; }
+  .hero h1 {
+    font-family: var(--font-display); font-weight: 700; font-size: clamp(3.2rem, 7vw, 5.4rem);
+    line-height: .95; margin: 0 0 16px; text-wrap: balance;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .lede { color: var(--muted); max-width: 52ch; margin: 0 0 28px; font-size: 1.05rem; }
+
+  .panel { display: grid; gap: 14px; }
+  .panel label { display: block; font-size: .8rem; font-weight: 600; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
+  textarea, select {
+    width: 100%; font: inherit; color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 6px; padding: 10px 12px;
+  }
+  textarea { min-height: 112px; resize: vertical; }
+  textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 12px; }
+  .row > div { min-width: 0; }
+
+  .go { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+  button.primary {
+    font: inherit; font-weight: 600; background: var(--accent); color: var(--accent-ink);
+    border: 0; border-radius: 6px; padding: 12px 22px; cursor: pointer;
+  }
+  button.primary:hover { filter: brightness(1.08); }
+  .cost { font-family: var(--font-mono); font-size: .9rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .cost strong { color: var(--ink); font-weight: 500; }
+  .note {
+    font-size: .9rem; border-inline-start: 3px solid var(--accent); background: var(--surface);
+    padding: 10px 14px; border-radius: 0 6px 6px 0;
+  }
+
+  /* Viewfinder */
+  .viewfinder { background: var(--frame); border-radius: 10px; padding: 14px; color: #E9E4DC; }
+  .screen {
+    position: relative; aspect-ratio: 16 / 9; max-width: 100%; overflow: hidden; border-radius: 3px;
+    background: linear-gradient(to bottom, #2B1E3A 0%, #8C3B4A 34%, #E9824A 52%, #F4B860 58%, #3C5A78 58.5%, #1F3550 100%);
+  }
+  .sun {
+    position: absolute; left: 50%; top: 44%; width: 18%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 50%; background: radial-gradient(circle, #FFE3A6 0%, #F8B25C 55%, rgba(248,178,92,0) 72%);
+  }
+  .sea { position: absolute; inset: 58.5% 0 0 0; overflow: hidden; }
+  .wave {
+    position: absolute; left: -10%; width: 120%; height: 2px; border-radius: 2px;
+    background: rgba(255, 214, 160, .55); animation: drift 6s ease-in-out infinite alternate;
+  }
+  .wave:nth-child(1) { top: 12%; }
+  .wave:nth-child(2) { top: 30%; opacity: .7; animation-duration: 7.5s; }
+  .wave:nth-child(3) { top: 52%; opacity: .5; animation-duration: 9s; }
+  .wave:nth-child(4) { top: 76%; opacity: .35; animation-duration: 5.5s; }
+  @keyframes drift { from { transform: translateX(-4%); } to { transform: translateX(4%); } }
+  .bars::before, .bars::after { content: ""; position: absolute; left: 0; right: 0; height: 9%; background: #000; z-index: 2; }
+  .bars::before { top: 0; } .bars::after { bottom: 0; }
+  .hud {
+    position: absolute; z-index: 3; inset: 11% 3% auto 3%; display: flex; justify-content: space-between;
+    font-family: var(--font-mono); font-size: clamp(.6rem, 1.4vw, .8rem); letter-spacing: .08em; direction: ltr;
+  }
+  .rec::before { content: ""; display: inline-block; width: .6em; height: .6em; border-radius: 50%; background: #FF3B30; margin-right: .5em; animation: blink 1.2s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .corners { position: absolute; inset: 14% 4%; z-index: 3; pointer-events: none;
+    background:
+      linear-gradient(#fff,#fff) top left / 18px 1px no-repeat, linear-gradient(#fff,#fff) top left / 1px 18px no-repeat,
+      linear-gradient(#fff,#fff) top right / 18px 1px no-repeat, linear-gradient(#fff,#fff) top right / 1px 18px no-repeat,
+      linear-gradient(#fff,#fff) bottom left / 18px 1px no-repeat, linear-gradient(#fff,#fff) bottom left / 1px 18px no-repeat,
+      linear-gradient(#fff,#fff) bottom right / 18px 1px no-repeat, linear-gradient(#fff,#fff) bottom right / 1px 18px no-repeat;
+    opacity: .6; }
+  .slate {
+    display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 12px;
+    background: #2A2D35; border: 1px solid #2A2D35; font-family: var(--font-mono); font-size: .72rem;
+  }
+  .slate div { background: var(--frame); padding: 6px 8px; min-width: 0; }
+  .slate b { display: block; font-weight: 400; color: #8E939C; letter-spacing: .08em; font-size: .65rem; }
+  .caption { margin-top: 10px; font-size: .85rem; color: #B9B3AA; }
+
+  section { padding-block: 40px; border-top: 1px solid var(--line); }
+  h2 { font-family: var(--font-display); font-size: 2.6rem; font-weight: 700; line-height: 1; margin: 0 0 24px; }
+
+  .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .steps li { counter-increment: s; min-width: 0; }
+  .steps li::before {
+    content: "שוט " counter(s); display: block; font-family: var(--font-mono); font-size: .75rem;
+    letter-spacing: .08em; color: var(--accent); margin-bottom: 6px;
+  }
+  .steps h3 { margin: 0 0 6px; font-size: 1.15rem; }
+  .steps p { margin: 0; color: var(--muted); }
+
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); }
+  table { width: 100%; border-collapse: collapse; min-width: 620px; }
+  th, td { text-align: start; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .75rem; letter-spacing: .06em; color: var(--muted); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; white-space: nowrap; direction: ltr; text-align: end; }
+  td .name { font-weight: 600; }
+  .tag { display: inline-block; font-size: .72rem; border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--muted); margin-inline-start: 6px; }
+  .src { font-size: .8rem; color: var(--muted); margin-top: 10px; }
+
+  footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: .85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 32px 40px; }
+    .steps { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .row { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    .row > div:first-child { grid-column: 1 / -1; }
+    .slate { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .wave, .rec::before { animation: none; } }
+</style>
+
+<div class="wrap" dir="rtl">
+  <header class="top">
+    <div class="brand">AI Video <span>Studio</span></div>
+    <span class="chip">גרסת הדגמה</span>
+  </header>
+
+  <div class="hero">
+    <div>
+      <h1>מטקסט <em>לסצנה</em> קולנועית</h1>
+      <p class="lede">כותבים מה רוצים לראות, או מעלים תמונה, ומקבלים סרטון. בוחרים מודל ואיכות, ורואים מראש כמה זה יעלה.</p>
+
+      <form class="panel" id="gen">
+        <div>
+          <label for="prompt">מה יהיה בסרטון?</label>
+          <textarea id="prompt">סוס בודד דוהר על חוף רטוב בשקיעה, גלים מתנפצים, מצלמה שעוקבת אחריו מהצד, אור כתום חם, מראה של סרט.</textarea>
+        </div>
+        <div class="row">
+          <div>
+            <label for="model">מודל</label>
+            <select id="model"></select>
+          </div>
+          <div>
+            <label for="res">איכות</label>
+            <select id="res"></select>
+          </div>
+          <div>
+            <label for="dur">אורך</label>
+            <select id="dur">
+              <option value="5">5 שניות</option>
+              <option value="6">6 שניות</option>
+              <option value="8">8 שניות</option>
+              <option value="10">10 שניות</option>
+            </select>
+          </div>
+        </div>
+        <div class="go">
+          <button class="primary" type="submit">צור סרטון</button>
+          <span class="cost" id="cost" aria-live="polite"></span>
+        </div>
+        <p class="note" id="note" hidden>הממשק עוד בבנייה. בינתיים יוצרים סרטונים דרך הצ'אט עם Claude: מעתיקים את הפרומפט ושולחים אותו.</p>
+      </form>
+    </div>
+
+    <figure class="viewfinder" style="margin:0">
+      <div class="screen bars" role="img" aria-label="תצוגה מקדימה: שקיעה מעל הים">
+        <div class="sun"></div>
+        <div class="sea"><i class="wave"></i><i class="wave"></i><i class="wave"></i><i class="wave"></i></div>
+        <div class="hud"><span class="rec">REC</span><span id="tc">00:00:00:00</span></div>
+        <div class="corners"></div>
+      </div>
+      <div class="slate">
+        <div><b>SCENE</b>01</div>
+        <div><b>TAKE</b>01</div>
+        <div><b>RATIO</b>16:9</div>
+        <div><b>FPS</b>24</div>
+      </div>
+      <figcaption class="caption">הסרטון הראשון שיצרנו: Seedance 2.0 Mini, ‏480p, ‏5 שניות.</figcaption>
+    </figure>
+  </div>
+
+  <section>
+    <h2>איך זה עובד</h2>
+    <ol class="steps">
+      <li>
+        <h3>מתארים את הסצנה</h3>
+        <p>כותבים במילים פשוטות מה רואים: מי, איפה, איזה אור, איך המצלמה זזה. אפשר גם להעלות תמונה שתהיה הפריים הראשון.</p>
+      </li>
+      <li>
+        <h3>בוחרים מודל ואיכות</h3>
+        <p>כל מודל חזק במשהו אחר. המחיר מחושב לפי שנייה, אז רואים את העלות לפני שמתחילים.</p>
+      </li>
+      <li>
+        <h3>מקבלים סרטון</h3>
+        <p>אחרי כמה דקות מגיע סרטון MP4, ברוב המודלים גם עם סאונד. משם אפשר לשפר, להאריך או לשנות.</p>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>המודלים</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>מודל</th><th>חזק ב־</th><th>אורך מקסימלי</th><th style="text-align:end">מחיר לשנייה</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="name">Veo 3.1</span><span class="tag">Google</span></td><td>האיכות הגבוהה ביותר, מראה קולנועי, סאונד מובנה</td><td>8 שניות</td><td class="num">$0.14–0.39</td></tr>
+          <tr><td><span class="name">Kling V3</span></td><td>תנועה חלקה, הנפשה של תמונה, עד 4K</td><td>15 שניות</td><td class="num">$0.08–0.42</td></tr>
+          <tr><td><span class="name">Seedance 2.0</span><span class="tag">ByteDance</span></td><td>שמירה על אותה דמות בין שוטים בעזרת תמונות ייחוס</td><td>15 שניות</td><td class="num">$0.16–0.53</td></tr>
+          <tr><td><span class="name">Wan 3.0</span><span class="tag">Alibaba</span></td><td>שוט ארוך ברצף אחד, עם סאונד</td><td>30 שניות</td><td class="num">$0.05–0.28</td></tr>
+          <tr><td><span class="name">Hailuo 2.3</span><span class="tag">MiniMax</span></td><td>זול, טוב לטיוטות ולתוכן יומיומי</td><td>10 שניות</td><td class="num">$0.03–0.07</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="src">המחירים לפי הקטלוג של Hedra, אוקטובר 2026. הם משתנים לפי איכות, סאונד ומהירות.</p>
+  </section>
+
+  <footer>
+    <span>AI Video Studio</span>
+    <span>מחולל וידאו מטקסט ומתמונות</span>
+  </footer>
+</div>
+
+<script>
+  // USD per second, from the Hedra catalog (Oct 2026). Audio-on prices where the model offers audio.
+  const MODELS = {
+    "Veo 3.1 Fast":       { "720p": 0.1429, "1080p": 0.1429 },
+    "Veo 3.1":            { "720p": 0.3929, "1080p": 0.3929 },
+    "Kling V3":           { "720p": 0.126,  "1080p": 0.168, "4K": 0.42 },
+    "Seedance 2.0":       { "480p": 0.1607, "720p": 0.2143, "1080p": 0.5273 },
+    "Seedance 2.0 Mini":  { "480p": 0.0804, "720p": 0.1071 },
+    "Wan 3.0":            { "480p": 0.05,   "720p": 0.10,  "1080p": 0.20 },
+    "Hailuo 2.3":         { "768p": 0.0429, "1080p": 0.0714 }
+  };
+  const $ = (id) => document.getElementById(id);
+  const model = $("model"), res = $("res"), dur = $("dur"), cost = $("cost");
+
+  for (const name of Object.keys(MODELS)) model.add(new Option(name, name));
+  model.value = "Seedance 2.0 Mini";
+
+  function fillRes() {
+    const prev = res.value;
+    res.innerHTML = "";
+    for (const r of Object.keys(MODELS[model.value])) res.add(new Option(r, r));
+    if (MODELS[model.value][prev]) res.value = prev;
+  }
+  function update() {
+    const perSec = MODELS[model.value][res.value];
+    const total = perSec * Number(dur.value);
+    cost.innerHTML = "עלות משוערת: <strong>$" + total.toFixed(2) + "</strong>";
+  }
+  model.addEventListener("change", () => { fillRes(); update(); });
+  res.addEventListener("change", update);
+  dur.addEventListener("change", update);
+  fillRes(); update();
+
+  $("gen").addEventListener("submit", (e) => { e.preventDefault(); $("note").hidden = false; });
+
+  // Running timecode on the viewfinder (HH:MM:SS:FF at 24 fps)
+  const tc = $("tc");
+  const t0 = performance.now();
+  const pad = (n) => String(n).padStart(2, "0");
+  if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    setInterval(() => {
+      const f = Math.floor((performance.now() - t0) / (1000 / 24));
+      const s = Math.floor(f / 24);
+      tc.textContent = pad(Math.floor(s / 3600)) + ":" + pad(Math.floor(s / 60) % 60) + ":" + pad(s % 60) + ":" + pad(f % 24);
+    }, 1000 / 24);
+  }
+</script>
