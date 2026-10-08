@@ -84,6 +84,15 @@
   .cheaper { margin: 0; font-size: .85rem; color: var(--muted); }
   .cheaper b { color: var(--ink); font-weight: 600; }
 
+  .live { margin: 0; font-size: .82rem; color: var(--muted); }
+  .live b { color: var(--ink); font-weight: 600; }
+  .note { display: grid; gap: 8px; }
+  .note .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .note button { font: inherit; font-size: .9rem; border-radius: 6px; padding: 7px 14px; cursor: pointer; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+  .note button.ok { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .note a { color: var(--accent); font-weight: 600; }
+  button.primary:disabled { opacity: .55; cursor: progress; }
+
   /* Viewfinder */
   .viewfinder { background: var(--frame); border-radius: 10px; padding: 14px; color: #E9E4DC; }
   .screen {
@@ -249,7 +258,8 @@
           <span class="cost" id="cost" aria-live="polite"></span>
         </div>
         <p class="cheaper" id="cheaper" hidden></p>
-        <p class="note" id="note" hidden>הממשק עוד בבנייה. בינתיים יוצרים סרטונים דרך הצ'אט עם Claude: מעתיקים את הפרומפט ושולחים אותו.</p>
+        <p class="live" id="live"></p>
+        <div class="note" id="note" hidden></div>
       </form>
     </div>
 
@@ -503,7 +513,138 @@
 
   fillOptions(); render(); update();
 
-  $("gen").addEventListener("submit", (e) => { e.preventDefault(); $("note").hidden = false; });
+  // ---- Live generation through the viewer's BudgetPixel connector ----
+  const BP = "BudgetPixel";
+  // Page model name -> BudgetPixel id, credits per second by resolution, min/max seconds
+  const BPM = {
+    "Seedance 2.5":       { id: "seedance-2.5",        cr: { "480p": 150, "720p": 330, "1080p": 750 }, min: 4, max: 30 },
+    "Seedance 2.0":       { id: "seedance-2.0",        cr: { "480p": 100, "720p": 220, "1080p": 550, "4K": 1250 }, min: 4, max: 15 },
+    "Seedance 2.0 Mini":  { id: "seedance-2.0-mini",   cr: { "480p": 60, "720p": 120 }, min: 4, max: 15 },
+    "Wan 3.0":            { id: "wan-3.0-video",       cr: { "480p": 60, "720p": 120, "1080p": 240 }, min: 2, max: 30 },
+    "Wan 3.0 Prime":      { id: "wan-3.0-video-prime", cr: { "480p": 85, "720p": 170, "1080p": 340 }, min: 2, max: 30 },
+    "MiniMax H3 Max":     { id: "minimax-h3-max",      cr: { "480p": 65, "768p": 105 }, min: 5, max: 15 },
+    "MiniMax H3":         { id: "minimax-h3",          cr: { "480p": 160, "768p": 160, "2K": 160, "4K": 160 }, min: 4, max: 15, noRes: true }
+  };
+  let mcp = null, balance = null, busy = false;
+  const note = $("note"), live = $("live"), go = document.querySelector("button.primary");
+
+  function bpPlan() {
+    const b = BPM[model.value]; if (!b) return null;
+    const r = b.cr[res.value] != null ? res.value : Object.keys(b.cr)[0];
+    const secs = Math.min(b.max, Math.max(b.min, Number(dur.value)));
+    return { b, r, secs, credits: b.cr[r] * secs };
+  }
+  function renderLive() {
+    const plan = bpPlan();
+    if (!mcp) { live.textContent = "יצירה ישירה מהדף זמינה כשהדף פתוח ב־claude.ai עם חיבור ל־BudgetPixel."; return; }
+    if (!plan) {
+      live.innerHTML = "המודל הזה עוד לא מחובר ליצירה מהדף. אפשר ליצור ישירות עם: <b></b>";
+      live.querySelector("b").textContent = Object.keys(BPM).join(", ");
+      return;
+    }
+    live.innerHTML = "ייצור דרך BudgetPixel: <b></b> קרדיטים" + (balance != null ? " · יש לך <b></b>" : "");
+    const bs = live.querySelectorAll("b");
+    bs[0].textContent = plan.credits.toLocaleString("en-US");
+    if (balance != null) bs[1].textContent = balance.toLocaleString("en-US");
+  }
+  [model, res, dur].forEach((el) => el.addEventListener("change", renderLive));
+
+  const ERR = {
+    server_not_connected: "BudgetPixel לא מחובר לחשבון שלך. אפשר להוסיף אותו ב־claude.ai תחת Settings ← Connectors.",
+    needs_reauth: "החיבור ל־BudgetPixel פג. צריך לחבר אותו מחדש ב־claude.ai תחת Settings ← Connectors.",
+    not_in_manifest: "לא אישרת לדף להשתמש ב־BudgetPixel. אפשר לאשר מתפריט ההרשאות של הדף.",
+    selection_required: "יש לך יותר מחיבור אחד ל־BudgetPixel. בחר אחד בהודעה של claude.ai ונסה שוב.",
+    blocked_by_policy: "מדיניות הארגון חוסמת את הפעולה הזאת.",
+    approval_required: "הפעולה צריכה את האישור שלך. לחץ שוב על \"צור סרטון\" ואשר.",
+    server_unavailable: "BudgetPixel לא עונה כרגע. נסה שוב בעוד דקה."
+  };
+  const errText = (e) => ERR[e && e.code] || ("השרת החזיר שגיאה: " + ((e && e.message) || "לא ידוע"));
+  function show(html, build) { note.innerHTML = html; note.hidden = false; if (build) build(note); }
+
+  async function loadBalance() {
+    try {
+      const r = await mcp.callTool(BP, "get_credit_balance", {}, { cache: false });
+      const p = r.payload || {};
+      if (typeof p.total_available === "number") balance = p.total_available;
+    } catch (e) { /* balance is optional; generation still reports its own errors */ }
+    renderLive();
+  }
+
+  async function askConfirm() {
+    const plan = bpPlan();
+    if (!mcp) { show("<span></span>", (n) => { n.querySelector("span").textContent = "כדי לייצר מהדף, פתח אותו ב־claude.ai עם חיבור ל־BudgetPixel. בינתיים אפשר לבקש מ־Claude בצ'אט."; }); return; }
+    if (!plan) { show("<span></span>", (n) => { n.querySelector("span").textContent = "בחר מודל שמחובר ליצירה: " + Object.keys(BPM).join(", ") + "."; }); return; }
+    const prompt = $("prompt").value.trim();
+    if (!prompt) { show("<span>כתוב קודם מה יהיה בסרטון.</span>"); return; }
+    if (balance == null) { show("<span>בודק את היתרה שלך...</span>"); await loadBalance(); }
+    if (balance != null && plan.credits > balance) {
+      show("<span></span>", (n) => { n.querySelector("span").textContent = "אין מספיק קרדיטים: צריך " + plan.credits + ", ויש לך " + balance + ". נסה איכות נמוכה יותר או סרטון קצר יותר."; });
+      return;
+    }
+    show('<span></span><div class="acts"><button type="button" class="ok">כן, צור</button><button type="button" class="no">ביטול</button></div>', (n) => {
+      n.querySelector("span").textContent = model.value + ", " + plan.r + ", " + plan.secs + " שניות. זה יעלה " + plan.credits + " קרדיטים מ־BudgetPixel (מחויב רק אם הסרטון מצליח).";
+      n.querySelector(".ok").addEventListener("click", () => run(plan, prompt));
+      n.querySelector(".no").addEventListener("click", () => { note.hidden = true; });
+    });
+  }
+
+  async function run(plan, prompt) {
+    if (busy) return; busy = true; go.disabled = true;
+    show("<span>שולח את הבקשה...</span>");
+    const input = { model: plan.b.id, prompt, duration_seconds: plan.secs, aspect_ratio: "16:9", generate_audio: true };
+    if (!plan.b.noRes) input.resolution = plan.r === "4K" ? "4k" : plan.r === "2K" ? "2k" : plan.r;
+    let job;
+    try {
+      const r = await mcp.callTool(BP, "generate_video", input, { cache: false });
+      job = (r.payload || {}).job_id;
+      if (!job) throw { code: "tool_error", message: "לא התקבל מספר עבודה" };
+    } catch (e) {
+      // A failed submit may still have started a job: never auto-retry.
+      show("<span></span>", (n) => { n.querySelector("span").textContent = errText(e) + (e && (e.code === "server_unavailable" || e.code === "upstream_error") ? " ייתכן שהבקשה בכל זאת נשלחה, אז כדאי לבדוק ב־BudgetPixel לפני שמנסים שוב." : ""); });
+      busy = false; go.disabled = false; return;
+    }
+    const started = Date.now();
+    const tick = async () => {
+      const mins = Math.floor((Date.now() - started) / 60000);
+      try {
+        const r = await mcp.callTool(BP, "check_generation_status", { job_id: job, type: "video" }, { cache: false });
+        let p = r.payload;
+        if (!p || typeof p !== "object") {
+          for (const c of r.content || []) { if (c.type === "text") { try { p = JSON.parse(c.text); break; } catch (_) {} } }
+        }
+        p = p || {};
+        if (p.status === "completed" && p.video_url) { done(job, p.video_url); return; }
+        if (p.status === "failed") { fail("הייצור נכשל ב־BudgetPixel. לא חויבת."); return; }
+        show("<span></span>", (n) => { n.querySelector("span").textContent = "הסרטון ברינדור" + (mins ? " (" + mins + " דק׳)" : "") + ". זה לוקח בדרך כלל 2–5 דקות. אפשר להשאיר את הדף פתוח."; });
+      } catch (e) {
+        if (!(e && e.retryable)) { fail(errText(e)); return; }
+      }
+      if (Date.now() - started > 20 * 60000) { fail("זה לוקח יותר מהרגיל. הסרטון ימשיך להיווצר, ותמצא אותו בהיסטוריה של BudgetPixel."); return; }
+      setTimeout(tick, 20000);
+    };
+    setTimeout(tick, 15000);
+  }
+  function fail(msg) { show("<span></span>", (n) => { n.querySelector("span").textContent = msg; }); busy = false; go.disabled = false; }
+  function done(job, url) {
+    busy = false; go.disabled = false;
+    show('<span>הסרטון מוכן! 🎬</span><a target="_blank" rel="noopener">פתח את הסרטון</a><span class="sm">הקישור פג אחרי כ־24 שעות, אלא אם שומרים אותו.</span><div class="acts"><button type="button" class="ok">שמור לספרייה שלי</button></div>', (n) => {
+      n.querySelector("a").href = url;
+      const b = n.querySelector(".ok");
+      b.addEventListener("click", async () => {
+        b.disabled = true; b.textContent = "שומר...";
+        try { await mcp.callTool(BP, "save_to_assets", { job_id: job, type: "video" }, { cache: false }); b.textContent = "נשמר ב־BudgetPixel"; }
+        catch (e) { b.disabled = false; b.textContent = "שמור לספרייה שלי"; n.querySelector(".sm").textContent = errText(e); }
+      });
+    });
+    loadBalance();
+  }
+
+  $("gen").addEventListener("submit", (e) => { e.preventDefault(); askConfirm(); });
+  renderLive();
+  (async () => {
+    try { mcp = window.claude && window.claude.use ? await window.claude.use("mcp") : null; } catch (_) { mcp = null; }
+    renderLive();
+  })();
 
   // Platforms on the market (Oct 2026). Prices: entry monthly price from third-party sources; "—" = not verified.
   // k: studio | multi | avatar | api | dead
