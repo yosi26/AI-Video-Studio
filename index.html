@@ -179,6 +179,24 @@
   .via { font-size: .72rem; color: var(--muted); direction: ltr; text-align: right; }
   .empty { color: var(--muted); padding: 24px 0; }
 
+  /* Platforms */
+  .plat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 12px; }
+  .plat { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .plat.dead { opacity: .7; }
+  .plat .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .plat .nm { font-weight: 600; font-size: 1.05rem; direction: ltr; }
+  .plat .kind { font-size: .72rem; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 6px; white-space: nowrap; }
+  .plat dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; margin: 0; font-size: .88rem; }
+  .plat dt { color: var(--muted); }
+  .plat dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
+  .plat dd.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .plat .best { font-size: .88rem; }
+  .plat .foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; font-size: .8rem; }
+  .plat a { color: var(--accent); text-decoration: none; direction: ltr; }
+  .plat a:hover { text-decoration: underline; }
+  .conn { font-size: .72rem; color: var(--accent); border: 1px solid var(--accent); border-radius: 4px; padding: 0 6px; }
+  .warn { font-size: .72rem; color: var(--bg); background: var(--muted); border-radius: 4px; padding: 0 6px; }
+
   footer { border-top: 1px solid var(--line); padding-top: 20px; font-size: .85rem; color: var(--muted); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 
   @media (max-width: 860px) {
@@ -202,7 +220,7 @@
   <div class="hero">
     <div>
       <h1>מטקסט <em>לסצנה</em> קולנועית</h1>
-      <p class="lede">כותבים מה רוצים לראות, או מעלים תמונה, ומקבלים סרטון. בוחרים מתוך כמעט 50 מודלים, מ־Veo ו־Sora ועד Seedance 2.5 ו־Kling 3.0, ורואים מראש כמה זה יעלה.</p>
+      <p class="lede">כותבים מה רוצים לראות, או מעלים תמונה, ומקבלים סרטון. בוחרים מתוך כמעט 50 מודלים, מ־Veo ו־Kling ועד Seedance 2.5 ו־Kling 3.0, ורואים מראש כמה זה יעלה.</p>
 
       <form class="panel" id="gen">
         <div>
@@ -286,6 +304,24 @@
     <p class="src">המידע נאסף מהקטלוגים של Hedra, ‏Kolbo, ‏Krea, ‏Higgsfield ו־BudgetPixel באוקטובר 2026. המחיר בדולרים הוא המחיר הנמוך לשנייה ב־Hedra, עם סאונד כשיש. מודלים בלי מחיר בדולרים זמינים בספקים שעובדים בקרדיטים.</p>
   </section>
 
+  <section id="platforms">
+    <div class="cat-head">
+      <h2>האתרים בשוק</h2>
+      <span class="count" id="pcount"></span>
+    </div>
+    <div class="filters" id="pfilters" role="group" aria-label="סינון אתרים">
+      <button type="button" data-f="all" aria-pressed="true">הכול</button>
+      <button type="button" data-f="studio" aria-pressed="false">סטודיו של יצרן</button>
+      <button type="button" data-f="multi" aria-pressed="false">הרבה מודלים במקום אחד</button>
+      <button type="button" data-f="avatar" aria-pressed="false">אווטארים ושיווק</button>
+      <button type="button" data-f="api" aria-pressed="false">API למפתחים</button>
+      <button type="button" data-f="free" aria-pressed="false">יש חינם</button>
+      <button type="button" data-f="conn" aria-pressed="false">מחובר אצלך</button>
+    </div>
+    <div class="plat-grid" id="plist"></div>
+    <p class="src">המחירים הם מחיר הכניסה החודשי, ונאספו ממקורות צד שלישי באוקטובר 2026. המקורות לא תמיד מסכימים ביניהם, והמחירים משתנים לעיתים קרובות, אז כדאי לבדוק באתר עצמו לפני שמשלמים. "מחובר אצלך": אפשר לייצר דרכו ישירות מהצ'אט עם Claude.</p>
+  </section>
+
   <footer>
     <span>AI Video Studio</span>
     <span>מחולל וידאו מטקסט ומתמונות</span>
@@ -303,8 +339,8 @@
     ["Google", "Veo 3", "הדור הקודם של Veo, עדיין חזק", 8, {"720p": .40, "1080p": .40}, "a", "Hedra · Krea · Higgsfield"],
     ["Google", "Gemini Omni Flash 1.1", "הכי טוב לדיאלוג בעברית, עד 4K", 10, {"360p": .0338, "720p": .1014, "1080p": .152, "4K": .3041}, "nakh", "Hedra · Kolbo · Krea · Higgsfield"],
     ["Google", "Gemini Omni Flash", "וידאו מרובה קלטים עם סאונד ודמויות עקביות", 10, {"720p": .1267}, "ah", "Hedra · Kolbo · Krea · Higgsfield"],
-    ["OpenAI", "Sora 2 Pro", "סצנות ארוכות עד 20 שניות, 1080p", 20, null, "a", "Kolbo"],
-    ["OpenAI", "Sora 2", "גרסה זולה יותר של Sora, ‏720p", 20, null, "a", "Kolbo"],
+    ["OpenAI", "Sora 2 Pro", "הופסק: OpenAI סגרה את Sora ב־2026. עדיין מופיע ב־Kolbo, ייתכן שלא עובד", 20, null, "a", "Kolbo"],
+    ["OpenAI", "Sora 2", "הופסק: OpenAI סגרה את Sora ב־2026", 20, null, "a", "Kolbo"],
     ["ByteDance", "Seedance 2.5", "הדגל החדש: עד 30 שניות, עשרות תמונות ייחוס", 30, {"480p": .1485, "720p": .3214, "1080p": .7909}, "na", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
     ["ByteDance", "Seedance 2.0", "דמות עקבית בין שוטים, עד 4K", 15, {"480p": .1607, "720p": .2143, "1080p": .5273, "4K": 1.0968}, "ak", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
     ["ByteDance", "Seedance 2.0 Fast", "Seedance 2.0 מהיר וזול יותר", 15, {"480p": .1286, "720p": .1714}, "a", "Hedra · Kolbo · Krea"],
@@ -445,6 +481,75 @@
   fillOptions(); render(); update();
 
   $("gen").addEventListener("submit", (e) => { e.preventDefault(); $("note").hidden = false; });
+
+  // Platforms on the market (Oct 2026). Prices: entry monthly price from third-party sources; "—" = not verified.
+  // k: studio | multi | avatar | api | dead
+  const P = [
+    ["Google Flow", "labs.google/flow", "studio", "Veo 3.1 (Lite, Fast, Quality)", "50 קרדיטים ביום", "$4.99 (AI Plus), ‏$19.99 (AI Pro)", "Veo עם סאונד מובנה, כולל קרדיטים יומיים בחינם", 0],
+    ["Runway", "runwayml.com", "studio", "Gen-4.5, ‏Aleph, מודלים נוספים", "125 קרדיטים חד־פעמי", "$15 ($12 בשנתי)", "כלי עריכה מקצועיים לצד היצירה", 0],
+    ["Kling AI", "klingai.com", "studio", "Kling 3.0, ‏O3, ‏2.6", "מוגבל", "~$10", "ריאליזם, מולטי־שוט ו־motion control", 0],
+    ["Hailuo AI", "hailuoai.video", "studio", "MiniMax H3, ‏Hailuo 2.3", "ניסיון", "~$8–15", "פיזיקה טבעית והבעות פנים", 0],
+    ["Luma Dream Machine", "lumalabs.ai", "studio", "Ray 3.2", "אין", "$30 (Plus)", "שליטה בתנועת מצלמה, נמכר היום בתוך Luma Agents", 0],
+    ["Pika", "pika.art", "studio", "Pika 2.5", "80 קרדיטים בחודש (480p)", "~$8–10", "אפקטים מסוגננים; החינם מותר לשימוש מסחרי", 0],
+    ["PixVerse", "pixverse.ai", "studio", "PixVerse V6", "יש", "$10", "זול ומהיר, טוב למעברים בין פריימים", 0],
+    ["Vidu", "vidu.com", "studio", "Vidu Q3", "מוגבל", "$8 (בשנתי)", "דמויות עקביות ואנימה", 0],
+    ["Dreamina (CapCut)", "dreamina.capcut.com", "studio", "Seedance 2.x", "—", "—", "הבית של Seedance מבית ByteDance, מחובר ל־CapCut", 0],
+    ["Grok Imagine", "grok.com", "studio", "Grok Imagine 1.5", "—", "חלק ממנוי Grok", "מהיר מאוד, כולל סאונד", 0],
+    ["Midjourney", "midjourney.com", "studio", "Midjourney Video", "אין", "$10", "אסתטיקה אמנותית; וידאו מנוצל מאותן שעות GPU של התמונות", 0],
+    ["Adobe Firefly", "firefly.adobe.com", "studio", "Firefly Video + מודלים של שותפים", "מוגבל", "$9.99", "בטוח לשימוש מסחרי, משתלב עם Premiere ו־Photoshop", 0],
+    ["LTX Studio", "ltx.studio", "studio", "LTX-2.5", "ניסיון בקרדיטים", "$12 (Lite)", "סטוריבורד ובימוי של סצנות שלמות", 0],
+    ["Higgsfield", "higgsfield.ai", "multi", "Cinema Studio 4.0, ‏Veo, ‏Kling, ‏Seedance, ‏Wan ועוד", "—", "~$15", "כלים קולנועיים, פריסטים ויראליים ופרסומות", 1],
+    ["Krea", "krea.ai", "multi", "Veo 3.1, ‏Seedance 2.5, ‏Kling 3.0, ‏Runway ועוד", "מוגבל", "$9", "ממשק מהיר ונקי, הרבה מודלים", 1],
+    ["Kolbo", "kolbo.ai", "multi", "57 מודלי וידאו, כולל Seedance 2.5, ‏Veo ו־Gemini Omni", "—", "—", "מתאים לעברית; פרויקטים, מודבורדים ועריכה", 1],
+    ["Magnific (לשעבר Freepik)", "magnific.com", "multi", "Kling, ‏Veo, ‏Seedance, ‏MiniMax ועוד", "וידאו רק בתשלום", "$14.50 (בשנתי)", "שילוב עם מאגר תמונות, אפסקייל ו־Spaces", 1],
+    ["OpenArt", "openart.ai", "multi", "Veo 3, ‏Kling, ‏Seedance ועוד", "40 קרדיטים לניסיון", "~$7–10", "סיפורים ודמויות עקביות", 1],
+    ["Hedra", "hedra.com", "multi", "50+ מודלים: Veo, ‏Kling, ‏Seedance, ‏Wan ועוד, ‏Hedra Avatar", "300 קרדיטים בחודש", "~$10–15", "קטלוג רחב ותשלום לפי שימוש; אווטארים מדברים", 1],
+    ["BudgetPixel", "budgetpixel.com", "multi", "Seedance 2.5, ‏Wan 3.0, ‏MiniMax H3", "—", "—", "זול יחסית, עובד בקרדיטים", 1],
+    ["ElevenLabs", "elevenlabs.io", "multi", "מודלי וידאו ותמונה בתוך Flows", "יש", "—", "החוזקה המרכזית: קול, דיבוב ומוזיקה", 1],
+    ["HeyGen", "heygen.com", "avatar", "אווטארים, תרגום וידאו", "3 סרטונים בחודש", "$29 ($24 בשנתי)", "אווטארים מדברים ותרגום עם ליפסינק", 0],
+    ["Synthesia", "synthesia.io", "avatar", "אווטארים לעסקים", "10 דקות בחודש", "$29 ($18 בשנתי)", "סרטוני הדרכה ותאגידים", 0],
+    ["Creatify", "creatify.ai", "avatar", "פרסומות UGC ומוצרים", "~2 סרטונים", "$33", "פרסומות מקישור למוצר", 0],
+    ["Invideo AI", "invideo.io", "avatar", "סרטון שלם מתסריט", "עם סימן מים", "~$20–28", "סרטונים ליוטיוב ולרשתות מפרומפט אחד", 0],
+    ["OpusClip", "opus.pro", "avatar", "חיתוך קליפים מסרטון ארוך", "—", "—", "הופך פודקאסט או סרטון ארוך לקליפים קצרים", 1],
+    ["fal.ai", "fal.ai", "api", "כמעט כל המודלים", "אין", "לפי שימוש", "API למפתחים, מתאים לבניית האפליקציה שלך", 0],
+    ["Replicate", "replicate.com", "api", "מודלים פתוחים ומסחריים", "אין", "לפי שימוש", "API למפתחים, כולל מודלים בקוד פתוח", 0],
+    ["Sora (OpenAI)", "openai.com/sora", "dead", "Sora 2", "—", "—", "הופסק: OpenAI הודיעה על סגירה במרץ 2026", 0]
+  ].map(([name, url, k, models, free, price, best, conn]) => ({ name, url, k, models, free, price, best, conn: !!conn }));
+
+  const KIND = { studio: "סטודיו של יצרן", multi: "הרבה מודלים", avatar: "אווטארים ושיווק", api: "API", dead: "הופסק" };
+  let pf = "all";
+  const hasFree = (p) => p.free !== "—" && p.free !== "אין" && !p.free.includes("רק בתשלום");
+  function renderP() {
+    const shown = P.filter((p) => pf === "all" ? true : pf === "free" ? hasFree(p) : pf === "conn" ? p.conn : p.k === pf);
+    $("pcount").textContent = shown.length + " מתוך " + P.length + " אתרים";
+    const list = $("plist"); list.innerHTML = "";
+    for (const p of shown) {
+      const el = document.createElement("article");
+      el.className = "plat" + (p.k === "dead" ? " dead" : "");
+      el.innerHTML =
+        '<div class="top"><span class="nm"></span><span class="kind"></span></div>' +
+        '<dl><dt>מודלים</dt><dd class="md"></dd><dt>חינם</dt><dd class="fr"></dd><dt>החל מ־</dt><dd class="mono pr"></dd></dl>' +
+        '<div class="best"></div><div class="foot"><a target="_blank" rel="noopener"></a><span class="flag"></span></div>';
+      el.querySelector(".nm").textContent = p.name;
+      el.querySelector(".kind").textContent = KIND[p.k];
+      el.querySelector(".md").textContent = p.models;
+      el.querySelector(".fr").textContent = p.free;
+      el.querySelector(".pr").textContent = p.price;
+      el.querySelector(".best").textContent = p.best;
+      const a = el.querySelector("a"); a.href = "https://" + p.url; a.textContent = p.url;
+      const f = el.querySelector(".flag");
+      if (p.conn) { f.className = "conn"; f.textContent = "מחובר אצלך"; }
+      else if (p.k === "dead") { f.className = "warn"; f.textContent = "לא זמין"; }
+      list.appendChild(el);
+    }
+  }
+  $("pfilters").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    pf = b.dataset.f;
+    $("pfilters").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderP();
+  });
+  renderP();
 
   // Running timecode on the viewfinder (HH:MM:SS:FF at 24 fps)
   const tc = $("tc");
