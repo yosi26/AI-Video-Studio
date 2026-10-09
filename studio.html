@@ -1,0 +1,466 @@
+<title>AVS Cinema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800;900&family=Heebo:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  /* Layout: black app-shell — top bar, oversized headline over a live prompt dock, bento of animated model tiles, horizontal preset reels, model board, CTA */
+  :root {
+    --bg: #050506;
+    --tile: #111114;
+    --tile-2: #19191E;
+    --ink: #F5F5F2;
+    --muted: #8E8F96;
+    --line: #232328;
+    --lime: #D4FF2A;
+    --lime-ink: #0A0C00;
+    --hot: #FF4D2E;
+    --font-display: "Rubik", "Arial Hebrew", "Arial Black", sans-serif;
+    --font-body: "Heebo", "Arial Hebrew", "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 15px; line-height: 1.55; direction: rtl; }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding-inline: 18px; }
+  :focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+  /* Top bar */
+  .bar { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .bar .wrap { display: flex; align-items: center; gap: 18px; padding-block: 12px; }
+  .mark { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 900; font-size: 1.15rem; letter-spacing: .02em; direction: ltr; }
+  .mark i { width: 26px; height: 26px; border-radius: 7px; background: var(--lime); display: grid; place-items: center; color: var(--lime-ink); font-style: normal; font-size: .8rem; }
+  .menu { display: flex; gap: 4px; margin-inline-start: 10px; }
+  .menu a { padding: 7px 12px; border-radius: 8px; color: var(--muted); font-weight: 500; }
+  .menu a:hover, .menu a.on { color: var(--ink); background: var(--tile); }
+  .menu a .new { font-family: var(--font-mono); font-size: .62rem; background: var(--lime); color: var(--lime-ink); border-radius: 4px; padding: 0 4px; margin-inline-start: 4px; vertical-align: 2px; }
+  .spacer { flex: 1; }
+  .cr { font-family: var(--font-mono); font-size: .8rem; border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; color: var(--muted); white-space: nowrap; }
+  .cr b { color: var(--lime); font-weight: 600; }
+  .go { background: var(--lime); color: var(--lime-ink); font-weight: 700; border: 0; border-radius: 10px; padding: 10px 18px; cursor: pointer; white-space: nowrap; }
+  .go:hover { filter: brightness(1.08); }
+  .go:disabled { opacity: .5; cursor: progress; }
+  @media (max-width: 980px) { .menu { display: none; } }
+  @media (max-width: 480px) { .cr { display: none; } }
+
+  /* Hero */
+  .hero { padding-block: 56px 28px; }
+  .kicker { font-family: var(--font-mono); font-size: .78rem; color: var(--lime); letter-spacing: .12em; direction: ltr; text-align: right; }
+  .hero h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(3.4rem, 11vw, 9.5rem); line-height: .86; letter-spacing: -.02em; margin: 12px 0 18px; text-wrap: balance; }
+  .hero h1 .l { color: var(--lime); }
+  .hero h1 .o { -webkit-text-stroke: 2px var(--ink); color: transparent; }
+  .hero .sub { color: var(--muted); font-size: 1.08rem; max-width: 60ch; margin: 0 0 28px; }
+
+  /* Prompt dock */
+  .dock { background: var(--tile); border: 1px solid var(--line); border-radius: 18px; padding: 14px; display: grid; gap: 12px; box-shadow: 0 0 0 1px color-mix(in srgb, var(--lime) 0%, transparent), 0 30px 80px -40px color-mix(in srgb, var(--lime) 35%, transparent); }
+  .dock textarea { width: 100%; min-height: 76px; resize: vertical; background: transparent; border: 0; color: var(--ink); font: inherit; font-size: 1.08rem; padding: 6px; }
+  .dock textarea::placeholder { color: var(--muted); }
+  .ctrl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .pill { display: inline-flex; align-items: center; gap: 6px; background: var(--tile-2); border: 1px solid var(--line); border-radius: 10px; padding: 0 4px 0 10px; height: 40px; }
+  .pill label { font-size: .75rem; color: var(--muted); white-space: nowrap; }
+  .pill select { background: transparent; border: 0; color: var(--ink); font: inherit; font-weight: 600; height: 38px; padding-inline: 4px; cursor: pointer; direction: ltr; }
+  .pill select option, .pill select optgroup { background: var(--tile-2); color: var(--ink); }
+  .ctrl .end { margin-inline-start: auto; display: flex; align-items: center; gap: 12px; }
+  .cost { font-family: var(--font-mono); font-size: .82rem; color: var(--muted); text-align: start; white-space: nowrap; }
+  .cost b { color: var(--ink); font-weight: 600; }
+  .go.big { height: 44px; padding-inline: 22px; font-size: 1rem; border-radius: 12px; }
+  .status { display: grid; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; font-size: .92rem; }
+  .status[hidden] { display: none; }
+  .status .acts { display: flex; gap: 8px; flex-wrap: wrap; }
+  .status .ghost { background: transparent; border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; cursor: pointer; }
+  .status a.watch { color: var(--lime); font-weight: 700; }
+  .bar-p { height: 4px; background: var(--tile-2); border-radius: 4px; overflow: hidden; }
+  .bar-p i { display: block; height: 100%; width: 30%; background: var(--lime); animation: slide 1.6s ease-in-out infinite; }
+  @keyframes slide { 0% { transform: translateX(120%); } 100% { transform: translateX(-340%); } }
+
+  /* Bento */
+  .sec { padding-block: 34px; }
+  .sec-h { display: flex; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 14px; }
+  .sec-h h2 { font-family: var(--font-display); font-weight: 900; font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1; margin: 0; }
+  .sec-h a { color: var(--muted); font-size: .9rem; white-space: nowrap; }
+  .sec-h a:hover { color: var(--lime); }
+  .bento { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: 210px; gap: 10px; }
+  .t { position: relative; border-radius: 16px; overflow: hidden; background: var(--tile); border: 1px solid var(--line); cursor: pointer; text-align: start; padding: 0; display: block; width: 100%; }
+  .t.w2 { grid-column: span 2; }
+  .t.h2 { grid-row: span 2; }
+  .t .scene { position: absolute; inset: 0; background-size: 160% 160%; animation: pan 14s ease-in-out infinite alternate; transition: transform .6s ease; }
+  .t:hover .scene { transform: scale(1.06); }
+  .t .grain { position: absolute; inset: 0; background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px); pointer-events: none; }
+  .t .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.82), rgba(0,0,0,0) 58%); }
+  .t .cap { position: absolute; inset: auto 0 0 0; padding: 16px; display: grid; gap: 4px; }
+  .t .cap b { font-family: var(--font-display); font-weight: 800; font-size: 1.35rem; line-height: 1.05; }
+  .t.h2 .cap b, .t.w2 .cap b { font-size: 2rem; }
+  .t .cap span { color: #C9CAD0; font-size: .88rem; }
+  .t .badge { position: absolute; top: 12px; right: 12px; font-family: var(--font-mono); font-size: .68rem; font-weight: 600; background: var(--lime); color: var(--lime-ink); border-radius: 6px; padding: 2px 7px; letter-spacing: .05em; }
+  .t .badge.hot { background: var(--hot); color: #fff; }
+  .t .tc { position: absolute; top: 12px; left: 12px; font-family: var(--font-mono); font-size: .68rem; background: rgba(0,0,0,.5); border-radius: 6px; padding: 2px 7px; direction: ltr; }
+  .t .play { position: absolute; left: 14px; bottom: 14px; width: 40px; height: 40px; border-radius: 50%; background: var(--lime); color: var(--lime-ink); display: grid; place-items: center; transform: scale(.8); opacity: 0; transition: .25s; font-size: .9rem; }
+  .t:hover .play { opacity: 1; transform: scale(1); }
+  @keyframes pan { 0% { background-position: 0% 30%; } 100% { background-position: 100% 70%; } }
+  @media (max-width: 900px) { .bento { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 180px; } }
+  @media (max-width: 520px) { .bento { grid-template-columns: minmax(0, 1fr); } .t.w2 { grid-column: auto; } .t.h2 { grid-row: span 1; } }
+
+  /* Scenes */
+  .s-sunset { background-image: radial-gradient(circle at 50% 46%, #FFE3A6 0 5%, #F8B25C 9%, transparent 16%), linear-gradient(180deg, #1E1330 0%, #7E2F45 36%, #F08B4A 52%, #2C4766 53%, #0E1C2E 100%); }
+  .s-city { background-image: radial-gradient(circle at 20% 80%, #FF2E88 0 3%, transparent 12%), radial-gradient(circle at 80% 70%, #2EE6FF 0 3%, transparent 14%), repeating-linear-gradient(90deg, #0B0F1E 0 22px, #101833 22px 30px, #0B0F1E 30px 52px), linear-gradient(180deg, #05060C, #1A1240); }
+  .s-forest { background-image: radial-gradient(ellipse at 60% 10%, rgba(255,250,200,.55), transparent 40%), linear-gradient(160deg, #0E2416, #1F4A2C 45%, #6F9A52 80%, #CFE29A); }
+  .s-neon { background-image: radial-gradient(circle at 30% 60%, #FF4FD8 0 10%, transparent 28%), radial-gradient(circle at 70% 35%, #6C4BFF 0 9%, transparent 30%), radial-gradient(circle at 55% 80%, #D4FF2A 0 4%, transparent 18%), #0A0716; }
+  .s-desert { background-image: linear-gradient(180deg, #F4D9A8 0%, #E3A869 48%, #B5643A 49%, #6E3720 100%); }
+  .s-face { background-image: radial-gradient(ellipse at 50% 42%, #E8B798 0 16%, #A86A4E 22%, transparent 34%), radial-gradient(ellipse at 50% 95%, #232028 0 30%, transparent 46%), linear-gradient(135deg, #2A2F3A, #0F1116); }
+  .s-storm { background-image: radial-gradient(circle at 70% 20%, rgba(220,230,255,.6), transparent 18%), linear-gradient(180deg, #11151C, #2C3746 50%, #0B0D11); }
+  .s-lava { background-image: radial-gradient(ellipse at 50% 120%, #FFB347, #E0452B 35%, #3B0E14 70%), #120507; }
+  .s-ice { background-image: linear-gradient(160deg, #E9F6FF, #9CCCF0 40%, #3C6E9C 75%, #0F2440); }
+  .s-studio { background-image: radial-gradient(circle at 50% 55%, #F3F1EA 0 14%, #9C9A94 22%, transparent 40%), linear-gradient(180deg, #1B1B1F, #2B2B30 60%, #0C0C0E); }
+  .s-ocean { background-image: radial-gradient(circle at 30% 30%, rgba(255,255,255,.25), transparent 20%), linear-gradient(180deg, #0B3A5C, #0E6A8A 50%, #04182A); }
+  .s-sakura { background-image: radial-gradient(circle at 25% 30%, #FFC6DD 0 8%, transparent 20%), radial-gradient(circle at 75% 55%, #FF9EC4 0 7%, transparent 22%), linear-gradient(180deg, #FDE7EF, #C88BA6 60%, #4B2A3E); }
+
+  /* Preset reels */
+  .reel { display: flex; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: var(--line) transparent; }
+  .p { flex: 0 0 auto; width: 188px; scroll-snap-align: start; border: 0; background: none; padding: 0; text-align: start; cursor: pointer; }
+  .p .frame { position: relative; aspect-ratio: 9 / 16; border-radius: 14px; overflow: hidden; border: 1px solid var(--line); }
+  .p .frame .scene { position: absolute; inset: 0; background-size: 170% 170%; animation: pan 10s ease-in-out infinite alternate; }
+  .p .frame .shade { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.7), transparent 50%); }
+  .p .frame .badge { position: absolute; top: 10px; right: 10px; font-family: var(--font-mono); font-size: .64rem; font-weight: 600; background: var(--lime); color: var(--lime-ink); border-radius: 5px; padding: 1px 6px; }
+  .p .frame .use { position: absolute; inset: auto 10px 10px 10px; text-align: center; background: rgba(0,0,0,.55); border: 1px solid rgba(255,255,255,.2); border-radius: 9px; padding: 6px; font-size: .8rem; font-weight: 600; opacity: 0; transition: .2s; }
+  .p:hover .use, .p:focus-visible .use { opacity: 1; }
+  .p .nm { display: block; margin-top: 8px; font-weight: 600; }
+  .p .ds { display: block; color: var(--muted); font-size: .8rem; }
+
+  /* Model board */
+  .board { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 8px; }
+  .m { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 12px; background: var(--tile); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; cursor: pointer; text-align: start; }
+  .m:hover { border-color: #3A3A42; }
+  .m[aria-pressed="true"] { border-color: var(--lime); }
+  .m .rk { font-family: var(--font-mono); font-size: .75rem; color: var(--muted); width: 2ch; text-align: center; }
+  .m .nm { font-weight: 700; direction: ltr; text-align: right; display: block; }
+  .m .ds { color: var(--muted); font-size: .8rem; display: block; }
+  .m .pr { font-family: var(--font-mono); font-size: .76rem; color: var(--lime); white-space: nowrap; direction: ltr; text-align: left; }
+  .m .pr.off { color: var(--muted); }
+
+  /* CTA */
+  .cta { margin-block: 40px 20px; border-radius: 24px; padding: 48px 28px; background: var(--lime); color: var(--lime-ink); display: grid; gap: 14px; justify-items: start; }
+  .cta h2 { font-family: var(--font-display); font-weight: 900; font-size: clamp(2.4rem, 7vw, 5rem); line-height: .9; margin: 0; }
+  .cta p { margin: 0; max-width: 54ch; font-weight: 500; }
+  .cta .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .cta a { background: var(--lime-ink); color: var(--lime); font-weight: 700; border-radius: 12px; padding: 12px 20px; }
+  .cta a.alt { background: transparent; color: var(--lime-ink); border: 2px solid var(--lime-ink); }
+  footer { color: var(--muted); font-size: .82rem; padding-block: 24px 36px; display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+
+  @media (prefers-reduced-motion: reduce) { .t .scene, .p .frame .scene, .bar-p i { animation: none; } .t:hover .scene { transform: none; } }
+</style>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#top"><i>AV</i>AVS CINEMA</a>
+    <nav class="menu" aria-label="ניווט">
+      <a href="#top" class="on">גלה</a>
+      <a href="#featured">וידאו<span class="new">NEW</span></a>
+      <a href="#presets">אפקטים</a>
+      <a href="#models">מודלים</a>
+      <a href="https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG" target="_blank" rel="noopener">השוואת אתרים</a>
+    </nav>
+    <span class="spacer"></span>
+    <span class="cr" id="crPill">קרדיטים <b id="crVal">—</b></span>
+    <a class="go" href="#dock">צור עכשיו</a>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+  <section class="hero">
+    <div class="kicker">CINEMA-GRADE AI VIDEO · 50 MODELS</div>
+    <h1>תהיה <span class="l">הבמאי.</span><br><span class="o">ה־AI</span> הוא הצוות.</h1>
+    <p class="sub">Seedance 2.5, ‏Veo 3.1, ‏Kling 3.0, ‏Wan 3.0 ו־MiniMax במקום אחד, בעברית. כותבים סצנה, בוחרים מודל, רואים את המחיר, ולוחצים צור.</p>
+
+    <form class="dock" id="dock">
+      <label for="prompt" hidden>תיאור הסצנה</label>
+      <textarea id="prompt" placeholder="תאר את הסצנה: מי, איפה, איזה אור, איך המצלמה זזה...">סוס שחור דוהר על חוף רטוב בשקיעה, טיפות מים קופצות בהילוך איטי, מצלמה עוקבת מהצד בגובה נמוך, אור כתום חם, מראה של סרט</textarea>
+      <div class="ctrl">
+        <div class="pill"><label for="model">מודל</label><select id="model"></select></div>
+        <div class="pill"><label for="res">איכות</label><select id="res"></select></div>
+        <div class="pill"><label for="dur">אורך</label><select id="dur"></select></div>
+        <div class="pill"><label for="ar">יחס</label><select id="ar"><option>16:9</option><option>9:16</option><option>1:1</option></select></div>
+        <div class="end">
+          <div class="cost" id="cost"></div>
+          <button class="go big" id="goBtn" type="submit">צור ✦</button>
+        </div>
+      </div>
+      <div class="status" id="status" hidden></div>
+    </form>
+  </section>
+
+  <section class="sec" id="featured">
+    <div class="sec-h"><h2>מה חדש בסטודיו</h2><a href="#models">כל המודלים ←</a></div>
+    <div class="bento" id="bento"></div>
+  </section>
+
+  <section class="sec" id="presets">
+    <div class="sec-h"><h2>אפקטים ויראליים</h2><span style="color:var(--muted);font-size:.9rem">לוחצים, והפרומפט מוכן</span></div>
+    <div class="reel" id="reel1"></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>תנועות מצלמה</h2><span style="color:var(--muted);font-size:.9rem">שפת קולנוע במילה אחת</span></div>
+    <div class="reel" id="reel2"></div>
+  </section>
+
+  <section class="sec" id="models">
+    <div class="sec-h"><h2>לוח המודלים</h2><span style="color:var(--muted);font-size:.9rem">ירוק = אפשר לייצר מכאן עכשיו</span></div>
+    <div class="board" id="board"></div>
+  </section>
+
+  <section class="cta">
+    <h2>השוט הבא שלך מחכה.</h2>
+    <p>טיוטה ב־480p עולה פחות מדולר. כשהשוט נראה נכון, מעלים איכות ומפיקים גרסה סופית.</p>
+    <div class="row">
+      <a href="#dock">לסטודיו</a>
+      <a class="alt" href="https://labs.google/flow" target="_blank" rel="noopener">Veo בחינם ב־Flow</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>AVS Cinema · AI Video Studio</span>
+    <span>הסצנות בדף הן איורים מונפשים, לא סרטונים שנוצרו.</span>
+  </footer>
+</main>
+
+<script>
+  // ---------- Data ----------
+  // BudgetPixel-backed models (credits per second by resolution) — these generate from this page
+  const BPM = {
+    "Seedance 2.5":      { id: "seedance-2.5",        cr: { "480p": 150, "720p": 330, "1080p": 750 }, min: 4, max: 30 },
+    "Seedance 2.0":      { id: "seedance-2.0",        cr: { "480p": 100, "720p": 220, "1080p": 550 }, min: 4, max: 15 },
+    "Seedance 2.0 Mini": { id: "seedance-2.0-mini",   cr: { "480p": 60, "720p": 120 }, min: 4, max: 15 },
+    "Wan 3.0":           { id: "wan-3.0-video",       cr: { "480p": 60, "720p": 120, "1080p": 240 }, min: 2, max: 30 },
+    "Wan 3.0 Prime":     { id: "wan-3.0-video-prime", cr: { "480p": 85, "720p": 170, "1080p": 340 }, min: 2, max: 30 },
+    "MiniMax H3 Max":    { id: "minimax-h3-max",      cr: { "480p": 65, "768p": 105, "1080p": 210 }, min: 5, max: 15 }
+  };
+  // Other leading models (USD/sec low end, Hedra catalog Oct 2026) — shown on the board
+  const OTHERS = [
+    ["Veo 3.1", "Google · הכי איכותי, מדבר עברית", "$0.14"],
+    ["Gemini Omni Flash 1.1", "Google · דיאלוג בעברית, עד 4K", "$0.03"],
+    ["Kling 3.0", "Kling · מולטי־שוט, עד 4K", "$0.13"],
+    ["Kling 3.0 Omni", "Kling · פיזיקה, סטוריבורד", "$0.11"],
+    ["FLUX 3 Video", "Black Forest Labs · עד 20 שנ׳", "$0.17"],
+    ["LTX-2.5", "Lightricks · עד 4K", "$0.09"],
+    ["Runway Gen-4.5", "Runway · המודל המוביל שלהם", "קרדיטים"],
+    ["Luma Ray 3.2", "Luma · שליטה במצלמה", "$0.10"],
+    ["Hailuo 2.3", "MiniMax · זול, פיזיקה טבעית", "$0.04"],
+    ["Grok Imagine 1.5", "xAI · מהיר עם סאונד", "קרדיטים"]
+  ];
+  const DESC = {
+    "Seedance 2.5": "ByteDance · הדגל, עד 30 שנ׳",
+    "Seedance 2.0": "ByteDance · דמות עקבית בין שוטים",
+    "Seedance 2.0 Mini": "ByteDance · הכי משתלם לטיוטות",
+    "Wan 3.0": "Alibaba · 30 שנ׳ בשוט אחד",
+    "Wan 3.0 Prime": "Alibaba · Wan 3.0 מהיר ואיכותי",
+    "MiniMax H3 Max": "MiniMax · נאמן לפרומפט"
+  };
+  const BENTO = [
+    ["s-sunset", "Seedance 2.5", "שוטים של עד 30 שניות עם סאונד ודמויות עקביות", "NEW", "w2 h2", "00:30"],
+    ["s-face", "Veo 3.1", "מדבר עברית טבעית", "HE", "", "00:08"],
+    ["s-neon", "Wan 3.0", "קליפ מוזיקה בשוט אחד", "NEW", "", "00:30"],
+    ["s-storm", "Kling 3.0", "מולטי־שוט, עד 4K", "", "", "00:15"],
+    ["s-studio", "צילום מוצר", "פרסומת מתמונה אחת", "HOT", "", "00:06"],
+    ["s-city", "MiniMax H3", "רחוב ניאון בלילה, עד 4K", "", "w2", "00:15"]
+  ];
+  const PRESETS = [
+    ["s-lava", "פיצוץ אפי", "הכול מתפוצץ ברקע", "NEW", "Epic slow-motion explosion erupts behind the subject, debris and embers flying, subject walks toward camera unfazed, cinematic lighting"],
+    ["s-ice", "קפיאה בזמן", "Bullet time סביב הרגע", "", "Bullet-time freeze: the moment stops mid-air, camera orbits 180 degrees around the frozen subject, droplets suspended, then time resumes"],
+    ["s-ocean", "גל ענק", "הגל מתנשא מעל הדמות", "", "A colossal ocean wave rises behind the subject and curls overhead, sunlight through the water, spray, dramatic low angle"],
+    ["s-sakura", "גשם פריחה", "עלי דובדבן מסתחררים", "NEW", "Cherry blossom petals swirl around the subject in a gentle vortex, soft pink backlight, dreamy slow motion"],
+    ["s-desert", "סערת חול", "מראה של סרט מדבר", "", "Desert sandstorm sweeps across the frame, subject silhouetted against an orange sun, heat haze, epic wide shot"],
+    ["s-neon", "שינוי בגדים", "החלפת לוק בקפיצה", "HOT", "Outfit transformation: the subject jumps and lands in a completely new stylish outfit, quick flash transition, music-video energy"],
+    ["s-storm", "ברק", "הברק מאיר את הסצנה", "", "Lightning strikes in the background, illuminating the subject for an instant, rain pouring, dramatic thunderstorm atmosphere"],
+    ["s-forest", "קסם ביער", "חלקיקי אור עולים", "", "Glowing magical particles rise from the forest floor around the subject, god rays through the trees, fantasy atmosphere"]
+  ];
+  const CAMERA = [
+    ["s-city", "Dolly Zoom", "אפקט ורטיגו", "", "Dolly zoom (vertigo effect) on the subject: camera pulls back while zooming in, background stretches dramatically"],
+    ["s-sunset", "Orbit 360°", "מקיף את הדמות", "", "Smooth 360-degree orbit around the subject at eye level, consistent lighting, cinematic"],
+    ["s-ocean", "FPV Drone", "צלילה מהירה", "NEW", "FPV drone shot diving fast from the sky down to the subject, sweeping close pass, high speed"],
+    ["s-face", "Crash Zoom", "זום מהיר לפנים", "", "Sudden crash zoom into the subject's face, dramatic punch-in, slight motion blur"],
+    ["s-desert", "Crane Up", "עלייה חושפת", "", "Crane shot rising up from the subject to reveal the vast landscape behind, epic reveal"],
+    ["s-forest", "Tracking", "מעקב מהצד", "", "Low tracking shot moving alongside the subject at the same speed, shallow depth of field"],
+    ["s-studio", "Earth Zoom Out", "מהדמות לחלל", "HOT", "Continuous zoom out from the subject to the city, the country, and finally the whole Earth from space"]
+  ];
+
+  // ---------- Controls ----------
+  const $ = (id) => document.getElementById(id);
+  const model = $("model"), res = $("res"), dur = $("dur"), ar = $("ar"), cost = $("cost"), status = $("status"), goBtn = $("goBtn");
+  for (const n of Object.keys(BPM)) model.add(new Option(n, n));
+  model.value = "Seedance 2.0 Mini";
+
+  function fill() {
+    const b = BPM[model.value], pr = res.value, pd = dur.value;
+    res.innerHTML = ""; dur.innerHTML = "";
+    for (const r of Object.keys(b.cr)) res.add(new Option(r, r));
+    if (b.cr[pr]) res.value = pr;
+    for (const d of [4, 5, 6, 8, 10, 12, 15, 20, 30]) if (d >= b.min && d <= b.max) dur.add(new Option(d + "s", d));
+    dur.value = [...dur.options].some((o) => o.value === pd) ? pd : String(Math.max(5, b.min));
+  }
+  let balance = null;
+  function credits() { return BPM[model.value].cr[res.value] * Number(dur.value); }
+  function update() {
+    const c = credits();
+    cost.innerHTML = "<b></b> קרדיטים" + (balance != null ? "<br>יתרה " + balance.toLocaleString("en-US") : "");
+    cost.querySelector("b").textContent = c.toLocaleString("en-US");
+    document.querySelectorAll(".m").forEach((el) => el.setAttribute("aria-pressed", String(el.dataset.name === model.value)));
+  }
+  model.addEventListener("change", () => { fill(); update(); });
+  res.addEventListener("change", update); dur.addEventListener("change", update);
+  fill(); update();
+
+  // ---------- Bento / reels / board ----------
+  function tile(scene, title, sub, badge, cls, tc) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "t " + (cls || "");
+    b.innerHTML = '<div class="scene ' + scene + '"></div><div class="grain"></div><div class="shade"></div>' +
+      (badge ? '<span class="badge' + (badge === "HOT" ? " hot" : "") + '"></span>' : "") +
+      '<span class="tc"></span><div class="cap"><b></b><span></span></div><span class="play">▶</span>';
+    if (badge) b.querySelector(".badge").textContent = badge;
+    b.querySelector(".tc").textContent = tc;
+    b.querySelector(".cap b").textContent = title;
+    b.querySelector(".cap span").textContent = sub;
+    b.addEventListener("click", () => { if (BPM[title]) { model.value = title; fill(); update(); } $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    return b;
+  }
+  const bento = $("bento");
+  for (const x of BENTO) bento.appendChild(tile(...x));
+
+  function presetCard(scene, name, desc, badge, prompt) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "p";
+    b.innerHTML = '<div class="frame"><div class="scene ' + scene + '"></div><div class="shade"></div>' + (badge ? '<span class="badge"></span>' : "") + '<span class="use">השתמש באפקט</span></div><span class="nm"></span><span class="ds"></span>';
+    if (badge) b.querySelector(".badge").textContent = badge;
+    b.querySelector(".nm").textContent = name;
+    b.querySelector(".ds").textContent = desc;
+    b.addEventListener("click", () => {
+      const p = $("prompt");
+      const base = p.value.trim();
+      p.value = (base ? base + ". " : "") + prompt;
+      $("dock").scrollIntoView({ behavior: "smooth", block: "center" });
+      p.focus();
+    });
+    return b;
+  }
+  for (const x of PRESETS) $("reel1").appendChild(presetCard(...x));
+  for (const x of CAMERA) $("reel2").appendChild(presetCard(...x));
+
+  const board = $("board");
+  let rank = 1;
+  for (const n of Object.keys(BPM)) {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "m"; b.dataset.name = n;
+    b.innerHTML = '<span class="rk"></span><span><span class="nm"></span><span class="ds"></span></span><span class="pr"></span>';
+    b.querySelector(".rk").textContent = rank++;
+    b.querySelector(".nm").textContent = n;
+    b.querySelector(".ds").textContent = DESC[n];
+    b.querySelector(".pr").textContent = "מ־" + Math.min(...Object.values(BPM[n].cr)) + " קר׳/שנ׳";
+    b.addEventListener("click", () => { model.value = n; fill(); update(); $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    board.appendChild(b);
+  }
+  for (const [n, d, p] of OTHERS) {
+    const b = document.createElement("a");
+    b.className = "m"; b.href = "https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG"; b.target = "_blank"; b.rel = "noopener";
+    b.innerHTML = '<span class="rk"></span><span><span class="nm"></span><span class="ds"></span></span><span class="pr off"></span>';
+    b.querySelector(".rk").textContent = rank++;
+    b.querySelector(".nm").textContent = n;
+    b.querySelector(".ds").textContent = d;
+    b.querySelector(".pr").textContent = p === "קרדיטים" ? p : "מ־" + p + "/שנ׳";
+    board.appendChild(b);
+  }
+  update();
+
+  // ---------- Live generation (viewer's BudgetPixel connector) ----------
+  const BP = "BudgetPixel";
+  let mcp = null, busy = false;
+  const ERR = {
+    server_not_connected: "BudgetPixel לא מחובר לחשבון שלך. מחברים אותו ב־claude.ai תחת Settings ← Connectors.",
+    needs_reauth: "החיבור ל־BudgetPixel פג. צריך לחבר אותו מחדש ב־claude.ai תחת Settings ← Connectors.",
+    not_in_manifest: "לא אישרת לדף להשתמש ב־BudgetPixel. אפשר לאשר מתפריט ההרשאות של הדף.",
+    selection_required: "יש לך יותר מחיבור אחד ל־BudgetPixel. בחר אחד בהודעה של claude.ai ונסה שוב.",
+    blocked_by_policy: "מדיניות הארגון חוסמת את הפעולה.",
+    approval_required: "הפעולה צריכה את האישור שלך. לחץ שוב על צור ואשר.",
+    server_unavailable: "BudgetPixel לא עונה כרגע. נסה שוב בעוד דקה."
+  };
+  const errText = (e) => ERR[e && e.code] || ("שגיאה: " + ((e && e.message) || "לא ידועה"));
+  function show(html, build) { status.innerHTML = html; status.hidden = false; if (build) build(status); }
+  function say(text, extra) { show("<span></span>" + (extra || ""), (s) => { s.querySelector("span").textContent = text; }); }
+
+  async function loadBalance() {
+    try {
+      const r = await mcp.callTool(BP, "get_credit_balance", {}, { cache: false });
+      const p = r.payload || {};
+      if (typeof p.total_available === "number") { balance = p.total_available; $("crVal").textContent = balance.toLocaleString("en-US"); }
+    } catch (e) { /* optional */ }
+    update();
+  }
+
+  async function onGo(e) {
+    e.preventDefault();
+    if (busy) return;
+    if (!mcp) { say("כדי לייצר מכאן, פתח את הדף ב־claude.ai עם חיבור ל־BudgetPixel."); return; }
+    const prompt = $("prompt").value.trim();
+    if (!prompt) { say("כתוב קודם מה יהיה בסרטון."); return; }
+    if (balance == null) { say("בודק יתרה..."); await loadBalance(); }
+    const c = credits(), secs = Number(dur.value);
+    if (balance != null && c > balance) { say("אין מספיק קרדיטים: צריך " + c + ", יש " + balance + ". נסה 480p או סרטון קצר יותר."); return; }
+    show('<span></span><div class="acts"><button type="button" class="go" id="yes">כן, צור</button><button type="button" class="ghost" id="no">ביטול</button></div>', (s) => {
+      s.querySelector("span").textContent = model.value + " · " + res.value + " · " + secs + " שנ׳ · " + ar.value + ". זה יעלה " + c + " קרדיטים מ־BudgetPixel (רק אם הסרטון מצליח).";
+      s.querySelector("#yes").addEventListener("click", () => run(prompt, secs));
+      s.querySelector("#no").addEventListener("click", () => { status.hidden = true; });
+    });
+  }
+
+  async function run(prompt, secs) {
+    busy = true; goBtn.disabled = true;
+    show('<span>שולח...</span><div class="bar-p"><i></i></div>');
+    let job;
+    try {
+      const r = await mcp.callTool(BP, "generate_video", {
+        model: BPM[model.value].id, prompt, duration_seconds: secs, resolution: res.value,
+        aspect_ratio: ar.value, generate_audio: true
+      }, { cache: false });
+      job = (r.payload || {}).job_id;
+      if (!job) throw { code: "tool_error", message: "לא התקבל מספר עבודה" };
+    } catch (e) {
+      say(errText(e) + (e && (e.code === "server_unavailable" || e.code === "upstream_error") ? " ייתכן שהבקשה בכל זאת נשלחה. בדוק ב־BudgetPixel לפני שמנסים שוב." : ""));
+      busy = false; goBtn.disabled = false; return;
+    }
+    const t0 = Date.now();
+    const tick = async () => {
+      const mins = Math.floor((Date.now() - t0) / 60000);
+      try {
+        const r = await mcp.callTool(BP, "check_generation_status", { job_id: job, type: "video" }, { cache: false });
+        let p = r.payload;
+        if (!p || typeof p !== "object") for (const b of r.content || []) if (b.type === "text") { try { p = JSON.parse(b.text); break; } catch (_) {} }
+        p = p || {};
+        if (p.status === "completed" && p.video_url) { done(job, p.video_url); return; }
+        if (p.status === "failed") { fin("הייצור נכשל. לא חויבת."); return; }
+        show('<span></span><div class="bar-p"><i></i></div>', (s) => { s.querySelector("span").textContent = "ברינדור" + (mins ? " · " + mins + " דק׳" : "") + " · בדרך כלל 2–5 דקות"; });
+      } catch (e) { if (!(e && e.retryable)) { fin(errText(e)); return; } }
+      if (Date.now() - t0 > 20 * 60000) { fin("לוקח יותר מהרגיל. הסרטון ימשיך להיווצר ויופיע בהיסטוריה של BudgetPixel."); return; }
+      setTimeout(tick, 20000);
+    };
+    setTimeout(tick, 15000);
+  }
+  function fin(msg) { say(msg); busy = false; goBtn.disabled = false; }
+  function done(job, url) {
+    busy = false; goBtn.disabled = false;
+    show('<span>הסרטון מוכן ✦</span><div class="acts"><a class="go watch" target="_blank" rel="noopener">▶ צפה בסרטון</a><button type="button" class="ghost" id="save">שמור לספרייה</button></div><span class="sm" style="color:var(--muted);font-size:.82rem">הקישור פג אחרי כ־24 שעות אם לא שומרים.</span>', (s) => {
+      const a = s.querySelector("a.watch"); a.href = url; a.style.color = "var(--lime-ink)";
+      const b = s.querySelector("#save");
+      b.addEventListener("click", async () => {
+        b.disabled = true; b.textContent = "שומר...";
+        try { await mcp.callTool(BP, "save_to_assets", { job_id: job, type: "video" }, { cache: false }); b.textContent = "נשמר ✓"; }
+        catch (e) { b.disabled = false; b.textContent = "שמור לספרייה"; s.querySelector(".sm").textContent = errText(e); }
+      });
+    });
+    loadBalance();
+  }
+  $("dock").addEventListener("submit", onGo);
+  (async () => {
+    try { mcp = window.claude && window.claude.use ? await window.claude.use("mcp") : null; } catch (_) { mcp = null; }
+    if (!mcp) $("crPill").hidden = true;
+  })();
+</script>
