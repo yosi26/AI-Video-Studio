@@ -138,6 +138,40 @@
   .m .pr { font-family: var(--font-mono); font-size: .76rem; color: var(--lime); white-space: nowrap; direction: ltr; text-align: left; }
   .m .pr.off { color: var(--muted); }
 
+  /* Catalog + sites + faq */
+  .search { width: 100%; background: var(--tile); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); font: inherit; padding: 12px 14px; margin-bottom: 10px; }
+  .chipsF { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 18px; }
+  .chipsF button { background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; cursor: pointer; font-size: .86rem; color: var(--muted); }
+  .chipsF button[aria-pressed="true"] { background: var(--lime); color: var(--lime-ink); border-color: var(--lime); font-weight: 600; }
+  .count { font-family: var(--font-mono); font-size: .8rem; color: var(--muted); }
+  .grp { margin-bottom: 22px; }
+  .grp h3 { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; text-transform: uppercase; direction: ltr; text-align: right; font-weight: 500; }
+  .m .tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
+  .m .tags span { font-size: .66rem; border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; color: var(--muted); }
+  .m .tags span.new { border-color: var(--lime); color: var(--lime); }
+  .m .live { font-family: var(--font-mono); font-size: .62rem; background: var(--lime); color: var(--lime-ink); border-radius: 4px; padding: 0 5px; margin-inline-start: 6px; vertical-align: 2px; }
+  .sites { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)); gap: 10px; }
+  .site { background: var(--tile); border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .site.dead { opacity: .55; }
+  .site .top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .site .nm { font-family: var(--font-display); font-weight: 800; font-size: 1.15rem; direction: ltr; }
+  .site .kind { font-size: .7rem; color: var(--muted); border: 1px solid var(--line); border-radius: 5px; padding: 0 6px; white-space: nowrap; }
+  .site dl { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 3px 10px; margin: 0; font-size: .86rem; }
+  .site dt { color: var(--muted); }
+  .site dd { margin: 0; overflow-wrap: anywhere; }
+  .site .best { font-size: .86rem; color: #C9CAD0; }
+  .site .foot { display: flex; justify-content: space-between; gap: 8px; align-items: center; font-size: .8rem; }
+  .site .foot a { color: var(--lime); direction: ltr; }
+  .site .conn { font-family: var(--font-mono); font-size: .64rem; background: var(--lime); color: var(--lime-ink); border-radius: 4px; padding: 1px 6px; }
+  .faq { display: grid; gap: 8px; max-width: 860px; }
+  .faq details { background: var(--tile); border: 1px solid var(--line); border-radius: 12px; padding: 2px 18px; }
+  .faq summary { cursor: pointer; font-weight: 600; padding-block: 14px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--lime); font-family: var(--font-mono); }
+  .faq details[open] summary::after { content: "–"; }
+  .faq p { margin: 0 0 16px; color: var(--muted); }
+  .src { font-size: .78rem; color: var(--muted); margin-top: 12px; }
+
   /* CTA */
   .cta { margin-block: 40px 20px; border-radius: 24px; padding: 48px 28px; background: var(--lime); color: var(--lime-ink); display: grid; gap: 14px; justify-items: start; }
   .cta h2 { font-family: var(--font-display); font-weight: 900; font-size: clamp(2.4rem, 7vw, 5rem); line-height: .9; margin: 0; }
@@ -154,11 +188,11 @@
   <div class="wrap">
     <a class="mark" href="#top"><i>AV</i>AVS CINEMA</a>
     <nav class="menu" aria-label="ניווט">
-      <a href="#top" class="on">גלה</a>
-      <a href="#featured">וידאו<span class="new">NEW</span></a>
-      <a href="#presets">אפקטים</a>
+      <a href="#top" class="on">סטודיו</a>
+      <a href="#presets">אפקטים<span class="new">NEW</span></a>
       <a href="#models">מודלים</a>
-      <a href="https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG" target="_blank" rel="noopener">השוואת אתרים</a>
+      <a href="#sites">השוואת אתרים</a>
+      <a href="#faq">שאלות</a>
     </nav>
     <span class="spacer"></span>
     <span class="cr" id="crPill">קרדיטים <b id="crVal">—</b></span>
@@ -205,8 +239,47 @@
   </section>
 
   <section class="sec" id="models">
-    <div class="sec-h"><h2>לוח המודלים</h2><span style="color:var(--muted);font-size:.9rem">ירוק = אפשר לייצר מכאן עכשיו</span></div>
-    <div class="board" id="board"></div>
+    <div class="sec-h"><h2>כל המודלים</h2><span class="count" id="count"></span></div>
+    <input id="q" class="search" type="search" aria-label="חיפוש מודל" placeholder="חיפוש: Veo, Kling, 4K, עברית...">
+    <div class="chipsF" id="filters" role="group" aria-label="סינון מודלים">
+      <button type="button" data-f="all" aria-pressed="true">הכול</button>
+      <button type="button" data-f="live" aria-pressed="false">יוצרים מכאן</button>
+      <button type="button" data-f="new" aria-pressed="false">חדשים</button>
+      <button type="button" data-f="audio" aria-pressed="false">עם סאונד</button>
+      <button type="button" data-f="4k" aria-pressed="false">4K</button>
+      <button type="button" data-f="long" aria-pressed="false">20 שנ׳ ומעלה</button>
+      <button type="button" data-f="hebrew" aria-pressed="false">עברית מדוברת</button>
+      <button type="button" data-f="cheap" aria-pressed="false">זולים</button>
+      <button type="button" data-f="avatar" aria-pressed="false">אווטאר</button>
+    </div>
+    <div id="board"></div>
+    <p class="src">מחיר בדולרים: המחיר הנמוך לשנייה ב־Hedra, אוקטובר 2026. "LIVE" = אפשר לייצר מהדף הזה דרך BudgetPixel.</p>
+  </section>
+
+  <section class="sec" id="sites">
+    <div class="sec-h"><h2>השוואת אתרים</h2><span class="count" id="pcount"></span></div>
+    <div class="chipsF" id="pfilters" role="group" aria-label="סינון אתרים">
+      <button type="button" data-f="all" aria-pressed="true">הכול</button>
+      <button type="button" data-f="studio" aria-pressed="false">סטודיו של יצרן</button>
+      <button type="button" data-f="multi" aria-pressed="false">הרבה מודלים</button>
+      <button type="button" data-f="avatar" aria-pressed="false">אווטארים ושיווק</button>
+      <button type="button" data-f="api" aria-pressed="false">API</button>
+      <button type="button" data-f="free" aria-pressed="false">יש חינם</button>
+      <button type="button" data-f="conn" aria-pressed="false">מחובר אצלך</button>
+    </div>
+    <div class="sites" id="plist"></div>
+    <p class="src">מחירי כניסה חודשיים ממקורות צד שלישי, אוקטובר 2026. המקורות לא תמיד מסכימים, אז כדאי לבדוק באתר לפני שמשלמים.</p>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="sec-h"><h2>שאלות נפוצות</h2></div>
+<div class="faq">
+        <details><summary>כמה עולה סרטון?</summary><p>תלוי במודל, באיכות ובאורך. 5 שניות ב־480p מתחילות בפחות מדולר, ו־30 שניות ב־1080p עם מודל דגל יכולות להגיע ל־20 דולר ומעלה. המחשבון בסטודיו מראה את המחיר מראש.</p></details>
+        <details><summary>איזה מודל הכי טוב?</summary><p>אין אחד. Veo 3.1 לאיכות ודיבור, Seedance 2.5 לשוטים ארוכים ודמויות עקביות, Kling 3.0 לתנועה, Wan 3.0 ו־MiniMax למחיר נמוך. בסטודיו אפשר לסנן לפי מה שחשוב לך.</p></details>
+        <details><summary>אפשר להתחיל בחינם?</summary><p>Google Flow נותן 50 קרדיטים ביום עם Veo 3.1, ורוב הפלטפורמות נותנות קרדיטים לניסיון. השוואת האתרים בסטודיו מראה מה יש בחינם בכל אחד.</p></details>
+        <details><summary>מה עם Sora?</summary><p>OpenAI הודיעה במרץ 2026 שהיא סוגרת את Sora, האפליקציה וה־API. יש היום חלופות טובות כמו Veo 3.1 ו־Seedance 2.5.</p></details>
+        <details><summary>הסרטון שייך לי?</summary><p>זה תלוי בתנאי הספק ובתוכנית שלך. בתוכניות חינמיות לפעמים אסור שימוש מסחרי, אז כדאי לבדוק לפני שמשתמשים בסרטון לפרסומת.</p></details>
+      </div>
   </section>
 
   <section class="cta">
@@ -220,7 +293,7 @@
 
   <footer>
     <span>AVS Cinema · AI Video Studio</span>
-    <span>הסצנות בדף הן איורים מונפשים, לא סרטונים שנוצרו.</span>
+    <span>הסצנות באריחים הן איורים מונפשים, לא סרטונים שנוצרו.</span>
   </footer>
 </main>
 
@@ -235,27 +308,92 @@
     "Wan 3.0 Prime":     { id: "wan-3.0-video-prime", cr: { "480p": 85, "720p": 170, "1080p": 340 }, min: 2, max: 30 },
     "MiniMax H3 Max":    { id: "minimax-h3-max",      cr: { "480p": 65, "768p": 105, "1080p": 210 }, min: 5, max: 15 }
   };
-  // Other leading models (USD/sec low end, Hedra catalog Oct 2026) — shown on the board
-  const OTHERS = [
-    ["Veo 3.1", "Google · הכי איכותי, מדבר עברית", "$0.14"],
-    ["Gemini Omni Flash 1.1", "Google · דיאלוג בעברית, עד 4K", "$0.03"],
-    ["Kling 3.0", "Kling · מולטי־שוט, עד 4K", "$0.13"],
-    ["Kling 3.0 Omni", "Kling · פיזיקה, סטוריבורד", "$0.11"],
-    ["FLUX 3 Video", "Black Forest Labs · עד 20 שנ׳", "$0.17"],
-    ["LTX-2.5", "Lightricks · עד 4K", "$0.09"],
-    ["Runway Gen-4.5", "Runway · המודל המוביל שלהם", "קרדיטים"],
-    ["Luma Ray 3.2", "Luma · שליטה במצלמה", "$0.10"],
-    ["Hailuo 2.3", "MiniMax · זול, פיזיקה טבעית", "$0.04"],
-    ["Grok Imagine 1.5", "xAI · מהיר עם סאונד", "קרדיטים"]
-  ];
-  const DESC = {
-    "Seedance 2.5": "ByteDance · הדגל, עד 30 שנ׳",
-    "Seedance 2.0": "ByteDance · דמות עקבית בין שוטים",
-    "Seedance 2.0 Mini": "ByteDance · הכי משתלם לטיוטות",
-    "Wan 3.0": "Alibaba · 30 שנ׳ בשוט אחד",
-    "Wan 3.0 Prime": "Alibaba · Wan 3.0 מהיר ואיכותי",
-    "MiniMax H3 Max": "MiniMax · נאמן לפרומפט"
-  };
+  const M = [
+    ["Google", "Veo 3.1", "האיכות הגבוהה ביותר, ריאליסטי וקולנועי", 8, {"720p": .3929, "1080p": .3929}, "a", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Google", "Veo 3.1 Fast", "Veo 3.1 מהיר ובשליש מחיר", 8, {"720p": .1429, "1080p": .1429}, "a", "Hedra · Kolbo · Krea"],
+    ["Google", "Veo 3.1 Lite", "הזול במשפחת Veo, מתאים לסדרות קליפים", 8, null, "a", "Kolbo · Krea · Higgsfield"],
+    ["Google", "Veo 3", "הדור הקודם של Veo, עדיין חזק", 8, {"720p": .40, "1080p": .40}, "a", "Hedra · Krea · Higgsfield"],
+    ["Google", "Gemini Omni Flash 1.1", "הכי טוב לדיאלוג בעברית, עד 4K", 10, {"360p": .0338, "720p": .1014, "1080p": .152, "4K": .3041}, "nakh", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Google", "Gemini Omni Flash", "וידאו מרובה קלטים עם סאונד ודמויות עקביות", 10, {"720p": .1267}, "ah", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["OpenAI", "Sora 2 Pro", "הופסק: OpenAI סגרה את Sora ב־2026. עדיין מופיע ב־Kolbo, ייתכן שלא עובד", 20, null, "a", "Kolbo"],
+    ["OpenAI", "Sora 2", "הופסק: OpenAI סגרה את Sora ב־2026", 20, null, "a", "Kolbo"],
+    ["ByteDance", "Seedance 2.5", "הדגל החדש: עד 30 שניות, עשרות תמונות ייחוס", 30, {"480p": .1485, "720p": .3214, "1080p": .7909}, "na", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["ByteDance", "Seedance 2.0", "דמות עקבית בין שוטים, עד 4K", 15, {"480p": .1607, "720p": .2143, "1080p": .5273, "4K": 1.0968}, "ak", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["ByteDance", "Seedance 2.0 Fast", "Seedance 2.0 מהיר וזול יותר", 15, {"480p": .1286, "720p": .1714}, "a", "Hedra · Kolbo · Krea"],
+    ["ByteDance", "Seedance 2.0 Mini", "הדרגה הזולה של Seedance 2.0", 15, {"480p": .0804, "720p": .1071}, "a", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["ByteDance", "Seedance 1.5 Pro", "פריים התחלה וסוף, סאונד מובנה, זול מאוד", 12, {"480p": .0225, "720p": .05, "1080p": .1125}, "a", "Hedra · Kolbo · Higgsfield"],
+    ["ByteDance", "Seedance 1.0 Pro", "תנועה טבעית וחלקה, מהיר", 12, null, "", "Kolbo · Krea"],
+    ["Kling", "Kling 3.0", "מולטי־שוט, סנכרון סאונד, עד 4K", 15, {"720p": .126, "1080p": .168, "4K": .42}, "ak", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Kling", "Kling 3.0 Omni (O3)", "הבנה פיזיקלית טובה, עובד מסטוריבורד", 15, {"720p": .112, "1080p": .14, "4K": .42}, "nak", "Hedra · Kolbo · Higgsfield"],
+    ["Kling", "Kling 3.0 Turbo", "Kling 3.0 מהיר", 15, null, "a", "Kolbo · Higgsfield"],
+    ["Kling", "Kling 2.6 Pro", "שוט בודד מצוין במחיר טוב, עם סאונד", 10, {"1080p": .14}, "a", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Kling", "Kling 2.5 Turbo", "יציב ומדויק בהוראות, ‏1080p", 10, {"1080p": .07}, "", "Hedra · Kolbo · Krea"],
+    ["Kling", "Kling O1", "חושב לפני שהוא מייצר, טוב לסגנון", 10, {"1080p": .1429}, "", "Hedra · Krea"],
+    ["Kling", "Kling 2.1 Master", "טקסטורות ועומק ברמה קולנועית", 10, {"720p": .28}, "", "Hedra"],
+    ["Alibaba", "Wan 3.0", "עד 30 שניות בשוט אחד, טוב לגרפיקה בתנועה", 30, {"480p": .05, "720p": .10, "1080p": .20}, "na", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["Alibaba", "Wan 3.0 Prime", "Wan 3.0 באיכות גבוהה ומהיר יותר", 30, {"480p": .068, "720p": .14, "1080p": .28}, "na", "Hedra · Kolbo · Higgsfield · BudgetPixel"],
+    ["Alibaba", "Wan 2.7", "סאונד מסונכרן ודמויות עקביות", 15, {"720p": .10, "1080p": .15}, "a", "Hedra · Kolbo · Higgsfield"],
+    ["MiniMax", "MiniMax H3", "עד 4K, ליפסינק חזק עם אודיו", 15, {"480p": .05, "768p": .06, "2K": .13, "4K": .16}, "nk", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["MiniMax", "MiniMax H3 Max", "נאמנות לפרומפט ואסתטיקה משופרות", 15, {"480p": .05, "768p": .08}, "na", "Hedra · Kolbo · Krea · Higgsfield · BudgetPixel"],
+    ["MiniMax", "MiniMax H3 Max Turbo", "H3 Max בחצי מחיר ומהיר", 15, {"480p": .025, "768p": .04}, "na", "Hedra · Kolbo · Krea"],
+    ["MiniMax", "Hailuo 2.3", "פיזיקה טבעית ורגש בפנים", 10, {"768p": .0429, "1080p": .0714}, "", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["MiniMax", "Hailuo 02", "1080p יומיומי עם תנועה טבעית", 10, {"768p": .045, "1080p": .08}, "", "Hedra · Krea"],
+    ["xAI", "Grok Imagine 1.5", "טקסט ותמונה לווידאו עם סאונד", 15, null, "na", "Kolbo · Krea · Higgsfield"],
+    ["xAI", "Grok Imagine", "מהיר וזול מאוד", 15, {"480p": .05, "720p": .07}, "a", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Black Forest Labs", "FLUX 3 Video", "קולנועי עם סאונד מסונכרן, עד 20 שניות", 20, {"720p": .17, "1080p": .29}, "na", "Hedra · Kolbo · Krea · Higgsfield"],
+    ["Lightricks", "LTX-2.5", "עד 20 שניות ועד 4K, סאונד חינם", 20, {"720p": .09, "1080p": .13, "1440p": .19, "4K": .30}, "nak", "Hedra · Kolbo · Krea"],
+    ["Lightricks", "LTX-2.3", "הנפשת פריים עד 4K", 20, {"1080p": .06, "1440p": .12, "4K": .24}, "ak", "Hedra · Kolbo · Krea"],
+    ["Runway", "Runway Gen-4.5", "המודל המוביל של Runway", 10, null, "", "Kolbo · Krea"],
+    ["Luma", "Luma Ray 3.2", "שליטה מדויקת בתנועת מצלמה", 10, {"540p": .10, "720p": .20, "1080p": .40}, "", "Hedra · Kolbo"],
+    ["Vidu", "Vidu Q3", "עד 16 שניות עם דיאלוג, מצטיין באנימה", 16, {"540p": .07, "720p": .154, "1080p": .154}, "a", "Hedra · Krea"],
+    ["PixVerse", "PixVerse V6", "קליפים מסוגננים עד 15 שניות", 15, {"360p": .035, "540p": .045, "720p": .06, "1080p": .115}, "a", "Hedra · Kolbo"],
+    ["Pika", "Pika 2.5", "תנועה מסוגננת ומראה עריכתי", 5, null, "n", "Kolbo"],
+    ["Happy Horse", "Happy Horse 1.1", "מולטי־שוט חזק, קוד פתוח", 15, {"720p": .2143, "1080p": .4286}, "", "Hedra · Kolbo · Higgsfield"],
+    ["Higgsfield", "Cinema Studio 4.0", "בימוי אוטומטי: מצלמה, תאורה, ז'אנר וצבע", 15, null, "na", "Higgsfield"],
+    ["Higgsfield", "Cinema Studio 3.0", "קולנועי ברמה גבוהה, עד 4K, בחירת ז'אנר", 15, null, "ak", "Higgsfield"],
+    ["Pruna", "P-Video", "טיוטות מהירות וזולות מאוד", 20, null, "na", "Kolbo"],
+    ["אווטאר", "Hedra Avatar", "דמות מדברת או שרה עד 10 דקות", 600, {"540p": .025, "720p": .05, "1080p": .0625}, "vh", "Hedra"],
+    ["אווטאר", "OmniHuman 1.5", "דמות רגשית שמונעת מהאודיו", 60, {"720p": .16, "1080p": .16}, "v", "Hedra"],
+    ["אווטאר", "HeyGen Photo Avatar 4", "תמונת פורטרט שמדברת", 60, {"720p": .10, "1080p": .10}, "v", "Hedra"],
+    ["אווטאר", "Kling AI Avatar v2", "אווטאר מאדם, חיה או דמות מצוירת", 60, {"720p": .0562}, "v", "Hedra"],
+    ["אווטאר", "VEED Fabric 1.0", "ליפסינק טבעי ואנימציה אקספרסיבית", 60, {"480p": .1071, "720p": .2143}, "v", "Hedra"],
+    ["אווטאר", "Creatify Aurora", "אווטאר מדבר או שר באיכות גבוהה", 60, {"480p": .07, "720p": .14}, "v", "Hedra"]
+  ].map(([maker, name, desc, max, usd, t, via]) => ({ maker, name, desc, max, usd, t, via,
+    low: usd ? Math.min(...Object.values(usd)) : null }));
+
+  const P = [
+    ["Google Flow", "labs.google/flow", "studio", "Veo 3.1 (Lite, Fast, Quality)", "50 קרדיטים ביום", "$4.99 (AI Plus), ‏$19.99 (AI Pro)", "Veo עם סאונד מובנה, כולל קרדיטים יומיים בחינם", 0],
+    ["Runway", "runwayml.com", "studio", "Gen-4.5, ‏Aleph, מודלים נוספים", "125 קרדיטים חד־פעמי", "$15 ($12 בשנתי)", "כלי עריכה מקצועיים לצד היצירה", 0],
+    ["Kling AI", "klingai.com", "studio", "Kling 3.0, ‏O3, ‏2.6", "מוגבל", "~$10", "ריאליזם, מולטי־שוט ו־motion control", 0],
+    ["Hailuo AI", "hailuoai.video", "studio", "MiniMax H3, ‏Hailuo 2.3", "ניסיון", "~$8–15", "פיזיקה טבעית והבעות פנים", 0],
+    ["Luma Dream Machine", "lumalabs.ai", "studio", "Ray 3.2", "אין", "$30 (Plus)", "שליטה בתנועת מצלמה, נמכר היום בתוך Luma Agents", 0],
+    ["Pika", "pika.art", "studio", "Pika 2.5", "80 קרדיטים בחודש (480p)", "~$8–10", "אפקטים מסוגננים; החינם מותר לשימוש מסחרי", 0],
+    ["PixVerse", "pixverse.ai", "studio", "PixVerse V6", "יש", "$10", "זול ומהיר, טוב למעברים בין פריימים", 0],
+    ["Vidu", "vidu.com", "studio", "Vidu Q3", "מוגבל", "$8 (בשנתי)", "דמויות עקביות ואנימה", 0],
+    ["Dreamina (CapCut)", "dreamina.capcut.com", "studio", "Seedance 2.x", "—", "—", "הבית של Seedance מבית ByteDance, מחובר ל־CapCut", 0],
+    ["Grok Imagine", "grok.com", "studio", "Grok Imagine 1.5", "—", "חלק ממנוי Grok", "מהיר מאוד, כולל סאונד", 0],
+    ["Midjourney", "midjourney.com", "studio", "Midjourney Video", "אין", "$10", "אסתטיקה אמנותית; וידאו מנוצל מאותן שעות GPU של התמונות", 0],
+    ["Adobe Firefly", "firefly.adobe.com", "studio", "Firefly Video + מודלים של שותפים", "מוגבל", "$9.99", "בטוח לשימוש מסחרי, משתלב עם Premiere ו־Photoshop", 0],
+    ["LTX Studio", "ltx.studio", "studio", "LTX-2.5", "ניסיון בקרדיטים", "$12 (Lite)", "סטוריבורד ובימוי של סצנות שלמות", 0],
+    ["Higgsfield", "higgsfield.ai", "multi", "Cinema Studio 4.0, ‏Veo, ‏Kling, ‏Seedance, ‏Wan ועוד", "—", "~$15", "כלים קולנועיים, פריסטים ויראליים ופרסומות", 1],
+    ["Krea", "krea.ai", "multi", "Veo 3.1, ‏Seedance 2.5, ‏Kling 3.0, ‏Runway ועוד", "מוגבל", "$9", "ממשק מהיר ונקי, הרבה מודלים", 1],
+    ["Kolbo", "kolbo.ai", "multi", "57 מודלי וידאו, כולל Seedance 2.5, ‏Veo ו־Gemini Omni", "—", "—", "מתאים לעברית; פרויקטים, מודבורדים ועריכה", 1],
+    ["Magnific (לשעבר Freepik)", "magnific.com", "multi", "Kling, ‏Veo, ‏Seedance, ‏MiniMax ועוד", "וידאו רק בתשלום", "$14.50 (בשנתי)", "שילוב עם מאגר תמונות, אפסקייל ו־Spaces", 1],
+    ["OpenArt", "openart.ai", "multi", "Veo 3, ‏Kling, ‏Seedance ועוד", "40 קרדיטים לניסיון", "~$7–10", "סיפורים ודמויות עקביות", 1],
+    ["Hedra", "hedra.com", "multi", "50+ מודלים: Veo, ‏Kling, ‏Seedance, ‏Wan ועוד, ‏Hedra Avatar", "300 קרדיטים בחודש", "~$10–15", "קטלוג רחב ותשלום לפי שימוש; אווטארים מדברים", 1],
+    ["BudgetPixel", "budgetpixel.com", "multi", "Seedance 2.5, ‏Wan 3.0, ‏MiniMax H3", "—", "—", "זול יחסית, עובד בקרדיטים", 1],
+    ["ElevenLabs", "elevenlabs.io", "multi", "מודלי וידאו ותמונה בתוך Flows", "יש", "—", "החוזקה המרכזית: קול, דיבוב ומוזיקה", 1],
+    ["Genspark", "genspark.ai", "multi", "Veo 3.1 ועוד, בתוך סוכן AI כללי", "100 קרדיטים ביום (בלי וידאו)", "$24.99 (Plus)", "סוכן שעושה הכול: מצגות, מסמכים, תמונות ווידאו", 0],
+    ["HeyGen", "heygen.com", "avatar", "אווטארים, תרגום וידאו", "3 סרטונים בחודש", "$29 ($24 בשנתי)", "אווטארים מדברים ותרגום עם ליפסינק", 0],
+    ["Synthesia", "synthesia.io", "avatar", "אווטארים לעסקים", "10 דקות בחודש", "$29 ($18 בשנתי)", "סרטוני הדרכה ותאגידים", 0],
+    ["Creatify", "creatify.ai", "avatar", "פרסומות UGC ומוצרים", "~2 סרטונים", "$33", "פרסומות מקישור למוצר", 0],
+    ["Invideo AI", "invideo.io", "avatar", "סרטון שלם מתסריט", "עם סימן מים", "~$20–28", "סרטונים ליוטיוב ולרשתות מפרומפט אחד", 0],
+    ["OpusClip", "opus.pro", "avatar", "חיתוך קליפים מסרטון ארוך", "—", "—", "הופך פודקאסט או סרטון ארוך לקליפים קצרים", 1],
+    ["fal.ai", "fal.ai", "api", "כמעט כל המודלים", "אין", "לפי שימוש", "API למפתחים, מתאים לבניית האפליקציה שלך", 0],
+    ["Replicate", "replicate.com", "api", "מודלים פתוחים ומסחריים", "אין", "לפי שימוש", "API למפתחים, כולל מודלים בקוד פתוח", 0],
+    ["Sora (OpenAI)", "openai.com/sora", "dead", "Sora 2", "—", "—", "הופסק: OpenAI הודיעה על סגירה במרץ 2026", 0]
+  ].map(([name, url, k, models, free, price, best, conn]) => ({ name, url, k, models, free, price, best, conn: !!conn }));
+
   const BENTO = [
     ["s-sunset", "Seedance 2.5", "שוטים של עד 30 שניות עם סאונד ודמויות עקביות", "NEW", "w2 h2", "00:30"],
     ["s-face", "Veo 3.1", "מדבר עברית טבעית", "HE", "", "00:08"],
@@ -321,7 +459,7 @@
     b.querySelector(".tc").textContent = tc;
     b.querySelector(".cap b").textContent = title;
     b.querySelector(".cap span").textContent = sub;
-    b.addEventListener("click", () => { if (BPM[title]) { model.value = title; fill(); update(); } $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); });
+    b.addEventListener("click", () => { if (BPM[title]) { model.value = title; fill(); update(); $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); } else $("models").scrollIntoView({ behavior: "smooth", block: "start" }); });
     return b;
   }
   const bento = $("bento");
@@ -346,29 +484,95 @@
   for (const x of PRESETS) $("reel1").appendChild(presetCard(...x));
   for (const x of CAMERA) $("reel2").appendChild(presetCard(...x));
 
-  const board = $("board");
-  let rank = 1;
-  for (const n of Object.keys(BPM)) {
-    const b = document.createElement("button");
-    b.type = "button"; b.className = "m"; b.dataset.name = n;
-    b.innerHTML = '<span class="rk"></span><span><span class="nm"></span><span class="ds"></span></span><span class="pr"></span>';
-    b.querySelector(".rk").textContent = rank++;
-    b.querySelector(".nm").textContent = n;
-    b.querySelector(".ds").textContent = DESC[n];
-    b.querySelector(".pr").textContent = "מ־" + Math.min(...Object.values(BPM[n].cr)) + " קר׳/שנ׳";
-    b.addEventListener("click", () => { model.value = n; fill(); update(); $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); });
-    board.appendChild(b);
+  // Full catalog with search + filters; LIVE models select into the dock
+  const TAGS = { n: ["חדש", "new"], a: ["סאונד", ""], k: ["4K", ""], h: ["עברית", ""], v: ["אווטאר", ""] };
+  let filter = "all", query = "";
+  const match = (m) => {
+    const qq = query.trim().toLowerCase();
+    if (qq && !(m.name + " " + m.maker + " " + m.desc + " " + m.via).toLowerCase().includes(qq)) return false;
+    switch (filter) {
+      case "live": return !!BPM[m.name];
+      case "new": return m.t.includes("n");
+      case "audio": return m.t.includes("a");
+      case "4k": return m.t.includes("k");
+      case "long": return m.max >= 20 && !m.t.includes("v");
+      case "hebrew": return m.t.includes("h");
+      case "cheap": return m.low != null && m.low <= 0.06;
+      case "avatar": return m.t.includes("v");
+      default: return true;
+    }
+  };
+  function renderBoard() {
+    const board = $("board"), shown = M.filter(match);
+    $("count").textContent = shown.length + " / " + M.length;
+    board.innerHTML = "";
+    if (!shown.length) { board.innerHTML = '<p class="src">לא נמצא מודל. נסה חיפוש אחר.</p>'; return; }
+    for (const maker of [...new Set(shown.map((m) => m.maker))]) {
+      const g = document.createElement("div"); g.className = "grp";
+      const h = document.createElement("h3"); h.textContent = maker; g.appendChild(h);
+      const grid = document.createElement("div"); grid.className = "board";
+      for (const m of shown.filter((x) => x.maker === maker)) {
+        const live = !!BPM[m.name];
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "m"; b.dataset.name = m.name;
+        b.setAttribute("aria-pressed", String(m.name === model.value));
+        b.innerHTML = '<span class="rk"></span><span><span class="nm"></span><span class="ds"></span><span class="tags"></span></span><span class="pr"></span>';
+        b.querySelector(".rk").textContent = m.max >= 600 ? "∞" : m.max + "s";
+        const nm = b.querySelector(".nm"); nm.textContent = m.name;
+        if (live) { const l = document.createElement("span"); l.className = "live"; l.textContent = "LIVE"; nm.appendChild(l); }
+        b.querySelector(".ds").textContent = m.desc;
+        b.querySelector(".tags").innerHTML = [...m.t].map((c) => TAGS[c] ? '<span class="' + TAGS[c][1] + '">' + TAGS[c][0] + "</span>" : "").join("");
+        const pr = b.querySelector(".pr");
+        if (m.low != null) pr.textContent = "$" + m.low.toFixed(3) + "/s"; else { pr.textContent = "קרדיטים"; pr.classList.add("off"); }
+        b.addEventListener("click", () => {
+          if (live) { model.value = m.name; fill(); update(); $("dock").scrollIntoView({ behavior: "smooth", block: "center" }); }
+          else { showSites(); }
+        });
+        grid.appendChild(b);
+      }
+      g.appendChild(grid); board.appendChild(g);
+    }
   }
-  for (const [n, d, p] of OTHERS) {
-    const b = document.createElement("a");
-    b.className = "m"; b.href = "https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG"; b.target = "_blank"; b.rel = "noopener";
-    b.innerHTML = '<span class="rk"></span><span><span class="nm"></span><span class="ds"></span></span><span class="pr off"></span>';
-    b.querySelector(".rk").textContent = rank++;
-    b.querySelector(".nm").textContent = n;
-    b.querySelector(".ds").textContent = d;
-    b.querySelector(".pr").textContent = p === "קרדיטים" ? p : "מ־" + p + "/שנ׳";
-    board.appendChild(b);
+  $("q").addEventListener("input", (e) => { query = e.target.value; renderBoard(); });
+  $("filters").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    filter = b.dataset.f;
+    $("filters").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderBoard();
+  });
+  renderBoard();
+
+  // Sites
+  const KIND = { studio: "סטודיו של יצרן", multi: "הרבה מודלים", avatar: "אווטארים ושיווק", api: "API", dead: "הופסק" };
+  let pf = "all";
+  const hasFree = (p) => p.free !== "—" && p.free !== "אין" && !p.free.includes("רק בתשלום") && !p.free.includes("בלי וידאו");
+  function renderP() {
+    const shown = P.filter((p) => pf === "all" ? true : pf === "free" ? hasFree(p) : pf === "conn" ? p.conn : p.k === pf);
+    $("pcount").textContent = shown.length + " / " + P.length;
+    const list = $("plist"); list.innerHTML = "";
+    for (const p of shown) {
+      const el = document.createElement("article");
+      el.className = "site" + (p.k === "dead" ? " dead" : "");
+      el.innerHTML = '<div class="top"><span class="nm"></span><span class="kind"></span></div><dl><dt>מודלים</dt><dd class="md"></dd><dt>חינם</dt><dd class="fr"></dd><dt>החל מ־</dt><dd class="pr"></dd></dl><div class="best"></div><div class="foot"><a target="_blank" rel="noopener"></a><span class="flag"></span></div>';
+      el.querySelector(".nm").textContent = p.name;
+      el.querySelector(".kind").textContent = KIND[p.k];
+      el.querySelector(".md").textContent = p.models;
+      el.querySelector(".fr").textContent = p.free;
+      el.querySelector(".pr").textContent = p.price;
+      el.querySelector(".best").textContent = p.best;
+      const a = el.querySelector("a"); a.href = "https://" + p.url; a.textContent = p.url;
+      if (p.conn) { const f = el.querySelector(".flag"); f.className = "conn"; f.textContent = "מחובר אצלך"; }
+      list.appendChild(el);
+    }
   }
+  function showSites() { $("sites").scrollIntoView({ behavior: "smooth", block: "start" }); }
+  $("pfilters").addEventListener("click", (e) => {
+    const b = e.target.closest("button"); if (!b) return;
+    pf = b.dataset.f;
+    $("pfilters").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    renderP();
+  });
+  renderP();
   update();
 
   // ---------- Live generation (viewer's BudgetPixel connector) ----------
