@@ -1,0 +1,334 @@
+<title>AI Video Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Karantina:wght@400;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a dark screening-room landing — hero prompt bar over a moving film strip of generated takes, then capability reels, Hebrew focus, workflow, FAQ */
+  :root {
+    --bg: #0C0D11;
+    --panel: #15171D;
+    --panel-2: #1C1F27;
+    --ink: #F1EEE8;
+    --muted: #9CA0AA;
+    --line: #2A2E38;
+    --accent: #F07A3A;
+    --accent-2: #FFC27A;
+    --accent-ink: #160E08;
+    --font-display: "Karantina", "Arial Narrow", sans-serif;
+    --font-body: "IBM Plex Sans Hebrew", "Arial Hebrew", "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 16px; line-height: 1.6; direction: rtl; }
+  a { color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+
+  /* Nav */
+  .nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+  .nav .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; }
+  .logo { font-family: var(--font-display); font-weight: 700; font-size: 1.9rem; line-height: 1; text-decoration: none; letter-spacing: .02em; }
+  .logo span { color: var(--accent); }
+  .links { display: flex; gap: 22px; font-size: .92rem; color: var(--muted); }
+  .links a { text-decoration: none; }
+  .links a:hover { color: var(--ink); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-weight: 600; text-decoration: none; border-radius: 8px; padding: 10px 18px; border: 1px solid transparent; cursor: pointer; white-space: nowrap; }
+  .btn.primary { background: var(--accent); color: var(--accent-ink); }
+  .btn.primary:hover { background: var(--accent-2); }
+  .btn.ghost { border-color: var(--line); color: var(--ink); background: transparent; }
+  .btn.ghost:hover { border-color: var(--muted); }
+  .btn:focus-visible, .tab:focus-visible, textarea:focus-visible, summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  @media (max-width: 760px) { .links { display: none; } }
+
+  /* Hero */
+  .hero { padding-block: 64px 24px; text-align: center; }
+  .eyebrow { display: inline-flex; gap: 8px; align-items: center; font-family: var(--font-mono); font-size: .78rem; letter-spacing: .08em; color: var(--accent-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 12px; }
+  .eyebrow i { width: 7px; height: 7px; border-radius: 50%; background: #FF453A; animation: blink 1.2s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(3.6rem, 10vw, 7.4rem); line-height: .9; margin: 20px auto 18px; max-width: 14ch; text-wrap: balance; }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero p.sub { color: var(--muted); font-size: 1.12rem; max-width: 56ch; margin: 0 auto 30px; }
+
+  .prompt { max-width: 760px; margin: 0 auto; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: start; }
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+  .tab { font: inherit; font-size: .88rem; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 8px; padding: 6px 12px; cursor: pointer; }
+  .tab[aria-selected="true"] { color: var(--ink); background: var(--panel-2); border-color: var(--line); }
+  .prompt textarea { width: 100%; min-height: 84px; resize: vertical; font: inherit; font-size: 1.02rem; color: var(--ink); background: transparent; border: 0; padding: 8px 6px; }
+  .prompt textarea::placeholder { color: var(--muted); }
+  .prompt .row { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; border-top: 1px solid var(--line); padding-top: 10px; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; font-family: var(--font-mono); font-size: .75rem; color: var(--muted); direction: ltr; }
+  .chips span { border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; }
+  .hint { max-width: 760px; margin: 12px auto 0; font-size: .85rem; color: var(--muted); }
+  .hint[hidden] { display: none; }
+
+  /* Film strip */
+  .strip { margin-top: 48px; overflow: hidden; mask-image: linear-gradient(to left, transparent, #000 8%, #000 92%, transparent); }
+  .reel { display: flex; gap: 14px; width: max-content; animation: roll 60s linear infinite; direction: ltr; }
+  .strip:hover .reel { animation-play-state: paused; }
+  @keyframes roll { to { transform: translateX(-50%); } }
+  .take { width: 260px; flex: none; border-radius: 10px; overflow: hidden; background: var(--panel); border: 1px solid var(--line); }
+  .take .pic { aspect-ratio: 16 / 9; position: relative; }
+  .take .pic::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.55), transparent 55%); }
+  .take .tc { position: absolute; z-index: 1; left: 8px; top: 8px; font-family: var(--font-mono); font-size: .68rem; color: #fff; background: rgba(0,0,0,.45); border-radius: 4px; padding: 1px 6px; }
+  .take .meta { display: flex; justify-content: space-between; gap: 8px; padding: 8px 10px; font-size: .8rem; direction: rtl; }
+  .take .meta b { font-weight: 600; direction: ltr; }
+  .take .meta span { color: var(--muted); }
+  .g1 { background: linear-gradient(180deg, #2B1E3A, #8C3B4A 45%, #F0904E 60%, #24405E 61%, #13253A); }
+  .g2 { background: radial-gradient(circle at 70% 35%, #9BE7FF 0 6%, transparent 7%), linear-gradient(180deg, #06122A, #12325C 60%, #0A1B33); }
+  .g3 { background: linear-gradient(135deg, #1F3B2B, #3F7A4F 40%, #C9D98A 80%); }
+  .g4 { background: radial-gradient(circle at 30% 60%, #FF6B9A 0 12%, transparent 30%), radial-gradient(circle at 70% 40%, #7A5CFF 0 10%, transparent 32%), #120E22; }
+  .g5 { background: linear-gradient(180deg, #E8D3B0, #C58D5A 55%, #5A3A27); }
+  .g6 { background: repeating-linear-gradient(90deg, #1A1C22 0 18px, #23262E 18px 36px), #1A1C22; }
+  .g7 { background: linear-gradient(160deg, #0F2027, #203A43 50%, #2C5364); }
+  .g8 { background: radial-gradient(ellipse at 50% 120%, #FFB347, #B5442E 40%, #2A0E18 75%); }
+
+  section.block { padding-block: 72px; border-top: 1px solid var(--line); }
+  .head { display: flex; justify-content: space-between; align-items: end; gap: 20px; flex-wrap: wrap; margin-bottom: 28px; }
+  .head h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 6vw, 3.8rem); line-height: .95; margin: 0; text-wrap: balance; }
+  .head p { margin: 0; color: var(--muted); max-width: 46ch; }
+
+  /* Logos row */
+  .makers { display: flex; flex-wrap: wrap; gap: 10px 28px; justify-content: center; font-family: var(--font-mono); font-size: .95rem; color: var(--muted); direction: ltr; padding-block: 28px; }
+  .makers b { color: var(--ink); font-weight: 500; }
+
+  /* Capabilities */
+  .caps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 14px; }
+  .cap { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+  .cap .lab { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .1em; color: var(--accent-2); direction: ltr; text-align: right; }
+  .cap h3 { margin: 0; font-size: 1.25rem; }
+  .cap p { margin: 0; color: var(--muted); font-size: .95rem; }
+  .cap ul { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+  .cap li { font-size: .78rem; border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; direction: ltr; }
+
+  /* Hebrew band */
+  .he { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 32px; align-items: center; }
+  .he .big { font-family: var(--font-display); font-weight: 700; font-size: clamp(5rem, 16vw, 11rem); line-height: .8; color: var(--accent); }
+  .he ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+  .he li { display: grid; gap: 2px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+  .he li b { font-size: 1.05rem; }
+  .he li span { color: var(--muted); font-size: .94rem; }
+  @media (max-width: 820px) { .he { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Workflow */
+  .flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; list-style: none; margin: 0; padding: 0; counter-reset: s; }
+  .flow li { counter-increment: s; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 22px; min-width: 0; }
+  .flow li::before { content: "שוט " counter(s); font-family: var(--font-mono); font-size: .75rem; letter-spacing: .08em; color: var(--accent); display: block; margin-bottom: 8px; }
+  .flow h3 { margin: 0 0 6px; font-size: 1.15rem; }
+  .flow p { margin: 0; color: var(--muted); font-size: .95rem; }
+  @media (max-width: 820px) { .flow { grid-template-columns: minmax(0, 1fr); } }
+
+  /* FAQ */
+  .faq { display: grid; gap: 10px; max-width: 820px; }
+  .faq details { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 4px 18px; }
+  .faq summary { cursor: pointer; font-weight: 600; padding-block: 14px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: "+"; color: var(--accent); font-family: var(--font-mono); }
+  .faq details[open] summary::after { content: "–"; }
+  .faq p { margin: 0 0 16px; color: var(--muted); }
+
+  /* CTA */
+  .cta { text-align: center; padding-block: 88px; border-top: 1px solid var(--line); background: radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 60%); }
+  .cta h2 { font-family: var(--font-display); font-size: clamp(3rem, 8vw, 5.4rem); line-height: .9; margin: 0 0 14px; }
+  .cta p { color: var(--muted); margin: 0 0 26px; }
+  .cta .btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+  footer { border-top: 1px solid var(--line); padding-block: 28px; color: var(--muted); font-size: .85rem; }
+  footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (prefers-reduced-motion: reduce) { .reel, .eyebrow i { animation: none; } }
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top">AI Video <span>Studio</span></a>
+    <nav class="links" aria-label="ניווט">
+      <a href="#caps">יכולות</a>
+      <a href="#hebrew">עברית</a>
+      <a href="#flow">איך זה עובד</a>
+      <a href="#faq">שאלות</a>
+    </nav>
+    <a class="btn primary" href="https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG" target="_blank" rel="noopener">לסטודיו</a>
+  </div>
+</header>
+
+<main id="top">
+  <div class="wrap hero">
+    <span class="eyebrow"><i></i>REC · כמעט 50 מודלי וידאו במקום אחד</span>
+    <h1>כל מודלי ה־AI. <em>סטודיו אחד.</em> בעברית.</h1>
+    <p class="sub">Veo, ‏Kling, ‏Seedance, ‏Wan ו־MiniMax, לצד מודלים לתמונה, מוזיקה וקול. כותבים בעברית, בוחרים מודל, ורואים את המחיר לפני שמתחילים.</p>
+
+    <form class="prompt" id="p">
+      <div class="tabs" role="tablist" aria-label="סוג יצירה">
+        <button type="button" class="tab" role="tab" aria-selected="true" data-k="video">וידאו</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-k="image">תמונה</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-k="music">מוזיקה</button>
+        <button type="button" class="tab" role="tab" aria-selected="false" data-k="voice">קול ודיבוב</button>
+      </div>
+      <label for="q" hidden>מה ליצור</label>
+      <textarea id="q">סוס בודד דוהר על חוף רטוב בשקיעה, מצלמה עוקבת מהצד, אור כתום חם</textarea>
+      <div class="row">
+        <div class="chips" id="chips"><span>Seedance 2.5</span><span>16:9</span><span>5s</span><span>480p</span></div>
+        <button class="btn primary" type="submit">צור</button>
+      </div>
+    </form>
+    <p class="hint" id="hint" hidden>היצירה עצמה מתבצעת בסטודיו. <a href="https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG" target="_blank" rel="noopener">פתח את הסטודיו</a> ובחר מודל.</p>
+  </div>
+
+  <div class="strip" aria-hidden="true">
+    <div class="reel" id="reel"></div>
+  </div>
+
+  <div class="wrap makers" aria-label="יצרני המודלים">
+    <b>Google</b><span>ByteDance</span><b>Kling</b><span>Alibaba</span><b>MiniMax</b><span>Black Forest Labs</span><b>Runway</b><span>Luma</span><b>Lightricks</b><span>xAI</span><b>ElevenLabs</b>
+  </div>
+
+  <section class="block" id="caps">
+    <div class="wrap">
+      <div class="head">
+        <h2>כל מה שצריך כדי להפיק סרטון</h2>
+        <p>מהרעיון ועד הקובץ הסופי, בלי לקפוץ בין חמישה אתרים.</p>
+      </div>
+      <div class="caps">
+        <article class="cap">
+          <span class="lab">VIDEO</span>
+          <h3>וידאו מטקסט ומתמונה</h3>
+          <p>שוטים קולנועיים עד 30 שניות, עם סאונד מובנה, פריים פתיחה וסגירה, ודמויות שנשארות זהות בין שוטים.</p>
+          <ul><li>Veo 3.1</li><li>Seedance 2.5</li><li>Kling 3.0</li><li>Wan 3.0</li><li>MiniMax H3</li></ul>
+        </article>
+        <article class="cap">
+          <span class="lab">IMAGE</span>
+          <h3>תמונות ופריימים</h3>
+          <p>פריים ראשון לסרטון, דמויות, פוסטרים וטקסט קריא בתוך התמונה. גם עריכה לפי הוראה.</p>
+          <ul><li>Nano Banana 2.1</li><li>GPT Image 2.5</li><li>FLUX 3</li><li>Seedream 5.0</li></ul>
+        </article>
+        <article class="cap">
+          <span class="lab">MUSIC</span>
+          <h3>מוזיקה ואפקטים</h3>
+          <p>שירים עם מילים, פסקול אינסטרומנטלי באורך מדויק, ואפקטים שמסונכרנים לתמונה.</p>
+          <ul><li>Music 3.0</li><li>Lyria 3</li><li>Mureka V9</li><li>Sonilo SFX</li></ul>
+        </article>
+        <article class="cap">
+          <span class="lab">VOICE</span>
+          <h3>קול, דיבוב ואווטאר</h3>
+          <p>קריינות, שיבוט קול, תרגום עם ליפסינק, ודמות מדברת מתמונה אחת.</p>
+          <ul><li>ElevenLabs</li><li>Hedra Avatar</li><li>OmniHuman 1.5</li><li>HeyGen</li></ul>
+        </article>
+        <article class="cap">
+          <span class="lab">EDIT</span>
+          <h3>עריכה בהוראות</h3>
+          <p>מחברים קליפים, מוסיפים כותרות, כתוביות ומוזיקה מהמאגר, ומקבלים קישור לצפייה ולהורדה.</p>
+          <ul><li>Descript</li><li>Topaz Upscale</li><li>Kling O3 Edit</li></ul>
+        </article>
+        <article class="cap">
+          <span class="lab">PRICE</span>
+          <h3>מחיר לפני שלוחצים</h3>
+          <p>מחשבון עלות לכל מודל, איכות ואורך, והצעה לאפשרות זולה יותר באותו אורך כשהמחיר גבוה.</p>
+          <ul><li>$/שנייה</li><li>480p–4K</li><li>2–30 שנ׳</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="hebrew">
+    <div class="wrap he">
+      <div>
+        <div class="big">עברית.</div>
+        <div class="head" style="margin-top:16px"><p>הממשק בעברית מימין לשמאל, ואנחנו יודעים איזה מודל באמת מתמודד עם עברית.</p></div>
+      </div>
+      <ul>
+        <li><b>דיבור בעברית בסרטון</b><span>Gemini Omni Flash 1.1 ו־Veo 3.1 מדברים עברית טבעית. Seedance ו־Kling לא, אז שם עדיף דיאלוג באנגלית או בתעתיק.</span></li>
+        <li><b>פרומפט בעברית</b><span>כותבים בעברית, והפרומפט מנוסח מחדש באנגלית קולנועית לפני השליחה למודל.</span></li>
+        <li><b>טקסט בתוך תמונה</b><span>רק מעט מודלים כותבים עברית קריאה בתמונה. אנחנו מסמנים אותם מראש.</span></li>
+        <li><b>כתוביות</b><span>כתוביות בעברית נוספות בשלב העריכה, ולא נשרפות בתוך הסרטון המקורי.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="block" id="flow">
+    <div class="wrap">
+      <div class="head">
+        <h2>משוט אחד לסרטון שלם</h2>
+        <p>ככה הפקנו את הסרטון הראשון: סוס על חוף בשקיעה, עם כותרת ומוזיקה.</p>
+      </div>
+      <ol class="flow">
+        <li><h3>כותבים את הסצנה</h3><p>מתארים מה רואים, איך המצלמה זזה ואיזה אור. אפשר להוסיף תמונה כפריים ראשון.</p></li>
+        <li><h3>מייצרים את הקליפים</h3><p>בוחרים מודל לפי איכות ומחיר. טיוטה ב־480p, גרסה סופית ב־1080p. בערך 3 דקות לקליפ.</p></li>
+        <li><h3>עורכים ומפרסמים</h3><p>הקליפים עוברים לעריכה: כותרת, מוזיקה, כתוביות. בסוף מקבלים קישור לצפייה וקובץ MP4.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block" id="faq">
+    <div class="wrap">
+      <div class="head"><h2>שאלות נפוצות</h2></div>
+      <div class="faq">
+        <details><summary>כמה עולה סרטון?</summary><p>תלוי במודל, באיכות ובאורך. 5 שניות ב־480p מתחילות בפחות מדולר, ו־30 שניות ב־1080p עם מודל דגל יכולות להגיע ל־20 דולר ומעלה. המחשבון בסטודיו מראה את המחיר מראש.</p></details>
+        <details><summary>איזה מודל הכי טוב?</summary><p>אין אחד. Veo 3.1 לאיכות ודיבור, Seedance 2.5 לשוטים ארוכים ודמויות עקביות, Kling 3.0 לתנועה, Wan 3.0 ו־MiniMax למחיר נמוך. בסטודיו אפשר לסנן לפי מה שחשוב לך.</p></details>
+        <details><summary>אפשר להתחיל בחינם?</summary><p>Google Flow נותן 50 קרדיטים ביום עם Veo 3.1, ורוב הפלטפורמות נותנות קרדיטים לניסיון. השוואת האתרים בסטודיו מראה מה יש בחינם בכל אחד.</p></details>
+        <details><summary>מה עם Sora?</summary><p>OpenAI הודיעה במרץ 2026 שהיא סוגרת את Sora, האפליקציה וה־API. יש היום חלופות טובות כמו Veo 3.1 ו־Seedance 2.5.</p></details>
+        <details><summary>הסרטון שייך לי?</summary><p>זה תלוי בתנאי הספק ובתוכנית שלך. בתוכניות חינמיות לפעמים אסור שימוש מסחרי, אז כדאי לבדוק לפני שמשתמשים בסרטון לפרסומת.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="wrap">
+      <h2>מוכנים לשוט הראשון?</h2>
+      <p>פותחים את הסטודיו, כותבים סצנה, ורואים כמה זה עולה לפני שמתחילים.</p>
+      <div class="btns">
+        <a class="btn primary" href="https://claude.ai/artifact/TQuuRKbiCAJM679bWd5zzG" target="_blank" rel="noopener">פתח את הסטודיו</a>
+        <a class="btn ghost" href="https://labs.google/flow" target="_blank" rel="noopener">לנסות Veo בחינם ב־Flow</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>AI Video Studio</span>
+    <span>מחולל וידאו מטקסט ומתמונות · 2026</span>
+  </div>
+</footer>
+
+<script>
+  // Film strip of example takes (illustrative gradients, not real outputs)
+  const TAKES = [
+    ["g1", "Seedance 2.5", "חוף בשקיעה", "00:05"],
+    ["g2", "Veo 3.1", "עיר בלילה", "00:08"],
+    ["g3", "Kling 3.0", "יער בבוקר", "00:10"],
+    ["g4", "Wan 3.0", "מועדון ניאון", "00:15"],
+    ["g5", "MiniMax H3", "מדבר בצהריים", "00:06"],
+    ["g6", "FLUX 3 Video", "סטודיו מוצר", "00:05"],
+    ["g7", "Gemini Omni 1.1", "ראיון בעברית", "00:08"],
+    ["g8", "LTX-2.5", "שקיעה מעל הר", "00:20"]
+  ];
+  const reel = document.getElementById("reel");
+  for (const pass of [0, 1]) {
+    for (const [g, m, t, d] of TAKES) {
+      const el = document.createElement("div");
+      el.className = "take";
+      el.innerHTML = '<div class="pic ' + g + '"><span class="tc"></span></div><div class="meta"><span></span><b></b></div>';
+      el.querySelector(".tc").textContent = "00:00:" + d;
+      el.querySelector(".meta span").textContent = t;
+      el.querySelector(".meta b").textContent = m;
+      reel.appendChild(el);
+    }
+  }
+
+  // Tabs change the sample prompt and chips
+  const SAMPLE = {
+    video: ["סוס בודד דוהר על חוף רטוב בשקיעה, מצלמה עוקבת מהצד, אור כתום חם", ["Seedance 2.5", "16:9", "5s", "480p"]],
+    image: ["פוסטר קולנועי של סוס על חוף בשקיעה, עם הכותרת \"חופש\" בעברית", ["Nano Banana 2.1", "2:3", "2K"]],
+    music: ["פסקול אינסטרומנטלי רגוע וקולנועי, פסנתר ומיתרים, 30 שניות", ["Music 3.0", "30s", "wav"]],
+    voice: ["קריינות בעברית, קול גברי חם: \"יש רגעים שבהם פשוט רצים קדימה\"", ["ElevenLabs", "he", "mp3"]]
+  };
+  const q = document.getElementById("q"), chips = document.getElementById("chips");
+  document.querySelectorAll(".tab").forEach((t) => t.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+    const [text, cs] = SAMPLE[t.dataset.k];
+    q.value = text;
+    chips.innerHTML = "";
+    for (const c of cs) { const s = document.createElement("span"); s.textContent = c; chips.appendChild(s); }
+  }));
+  document.getElementById("p").addEventListener("submit", (e) => { e.preventDefault(); document.getElementById("hint").hidden = false; });
+</script>
