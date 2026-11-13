@@ -10,7 +10,7 @@ final chorus 122.7-136.6 | outro 136.6-142.4 | instrumental 142-164 | "אני כ
 ## How to run each clip on LTX 2.5 Fast
 
 - **Clips with singing (9, 10, 11, 12, 13, 14, 15, 17)**: audio-to-video. Audio = that song window (cut exactly like
-  clips 1-8), start image = last frame of the previous clip. In audio-to-video the clip length follows the audio.
+  clips 1-8), start image = last frame of the previous clip (clip 9 uses a new mountain-peak image). In audio-to-video the clip length follows the audio.
 - **Fully instrumental clips (16, 18, 19)**: image-to-video with a start image (the sound is replaced by the original
   song when the video is assembled, so the generated audio does not matter).
 - **Clip 19**: image-to-video with start image = last frame of clip 18 and END image =
@@ -26,11 +26,12 @@ final chorus 122.7-136.6 | outro 136.6-142.4 | instrumental 142-164 | "אני כ
 
 ---
 
-## 9 · 80-90 s · Chorus opens — "איי איי איי… תן לי לעוף…"
-Medium shot of the man from the image standing on a canyon cliff edge at golden-hour sunset, warm light and soft violet haze around him, a breeze moving his jacket. He starts with his eyes closed, then lifts his face to the sky and sings melodically along with the music, his chest opening as his arms slowly spread wide. In a quiet moment his mouth closes while glowing golden-violet particles begin to rise around him and his boots barely lift off the rock, then he sings again with a joyful smile, head tilted up. Camera: slow dolly in, then a gentle tilt up. Cinematic, ultra-detailed, saturated gold and violet light, painterly photoreal look. Audio: the song's melodic vocal and soft wind, his lip movements follow the vocal.
+## 9 · 80-90 s · Chorus opens — "איי איי איי… תן לי לעוף…" (new location: mountain peak above the clouds)
+Start image (new, not the canyon): the man on a rocky mountain peak above a sea of golden clouds at sunrise, hand reaching toward the camera like the other start images.
+Medium shot of the man from the image standing on a rocky peak high above a sea of glowing golden clouds at sunrise, warm light and soft violet haze around him, a breeze moving his jacket. He starts with his eyes closed, then lifts his face to the sky and sings melodically along with the music, his chest opening as his arms slowly spread wide. In a quiet moment his mouth closes while glowing golden-violet particles begin to rise around him and his boots barely lift off the rock, then he sings again with a joyful smile, head tilted up. Camera: slow dolly in, then a gentle tilt up. Cinematic, ultra-detailed, saturated gold and violet light, painterly photoreal look. Audio: the song's melodic vocal and soft wind, his lip movements follow the vocal.
 
 ## 10 · 90-100 s · "…לראות את הטוב" then instrumental
-Medium shot of the man from the image in golden canyon light. He finishes a sung line with a gentle smile, then closes his mouth and stays silent as he rises off the cliff and floats upward with open arms and a peaceful expression. Camera: pull back and jib up into a wide aerial view of the vast canyon, a golden river winding below, glowing clouds around him, until he is a small figure in a luminous sky. Cinematic, ultra-detailed, saturated gold and violet light. Audio: one short sung line at the start, then instrumental music only, his mouth stays closed.
+Medium shot of the man from the image above the golden clouds. He finishes a sung line with a gentle smile, then closes his mouth and stays silent as he rises off the peak and floats upward with open arms and a peaceful expression. Camera: pull back and jib up into a wide aerial view of the endless sea of clouds lit gold and violet, the first stars appearing in a deepening sky, until he is a small figure in a luminous sky. Cinematic, ultra-detailed, saturated gold and violet light. Audio: one short sung line at the start, then instrumental music only, his mouth stays closed.
 
 ## 11 · 100-110 s · Instrumental, verse 2 starts at the very end — "נופל וקם, שוב מתחיל"
 Wide aerial shot gliding over Jerusalem's Old City at dusk, golden stone walls, glowing domes, hanging lanterns and violet mist. The man descends gently into a narrow stone alley lit by lanterns, lands softly and walks calmly toward the camera with his mouth closed. In the final moment he begins to rap quietly to the camera, low and hypnotic. Camera: smooth aerial descent that settles into a steady tracking shot in front of him. Cinematic, ultra-detailed, golden and violet light. Audio: instrumental music and soft ambience, the first rap line only at the very end, lip-synced.
