@@ -67,7 +67,7 @@ The man from the image stands inside the lantern-lit stone arch, looks into the 
 **Reference image:** the man in the lantern-lit arch, side view, hand just lowered, head turning away toward the alley.
 The man from the image lowers his hand, turns and walks slowly away through the glowing archway into the alley, lantern light flickering on the stones. Camera: slow pull back and jib up to reveal the Jerusalem skyline under the full moon, violet mist swirling, city lights twinkling, while the figure becomes small and fades into the warm glow. Cinematic, golden and violet light. Audio: instrumental music only, no singing, mouth closed.
 
-## 19 · 180-187.6 s · Final shot, closes the loop (image-to-video, start = last frame of 18, END = loop frame)
+## 19 · 180-187.6 s · Final shot, closes the loop (image-to-video, own wide Jerusalem reference, END = loop frame)
 **Reference image:** no man. A slightly wider, different-angle view of Jerusalem at night with a full moon and violet mist, same style (start image). The END image is `loop_end_frame_seg1_first.jpg`.
 Peaceful wide, almost static shot of Jerusalem at night: a full moon in a purple stormy sky, golden city lights, violet mist drifting, a stone archway with a glowing lantern at the left, purple bougainvillea flowers. Only gentle motion: drifting mist and twinkling lights. Camera: static with a barely perceptible drift. The final frame is the end image. Cinematic, ultra-detailed, golden and violet light. Audio: ambient instrumental fade.
 
