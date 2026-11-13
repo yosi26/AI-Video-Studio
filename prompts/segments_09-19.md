@@ -37,7 +37,7 @@ final chorus 122.7-136.6 | outro 136.6-142.4 | instrumental 142-164 | "אני כ
 **Reference image (first frame):** the man on a rocky mountain peak above a sea of golden clouds at sunrise, eyes closed, calm face, mouth closed, arms relaxed at his sides, medium shot, slight low angle.
 **Prompt:**
 ```
-He stands still for a moment, a light breeze moving his jacket. He opens his eyes, lifts his face to the sky and begins to sing, lips matching the vocal: first a short note, then a flowing melodic phrase as his chest opens and his arms slowly spread wide. In the instrumental pause his mouth closes, a soft smile appears and glowing golden-violet particles drift upward around him while his feet lift very slightly off the rock. When the vocal returns he sings again with a joyful, bright expression, head tilted up. Camera: slow dolly in, then a gentle tilt up. Single continuous shot. Audio: the provided song, melodic vocal "ay-ay-ay… let me fly", soft wind.
+He stands still for a moment, a light breeze moving his jacket. He opens his eyes, lifts his face to the sky and begins to sing, lips matching the vocal: first a short note, then a flowing melodic phrase as his chest opens and his arms slowly spread wide. In the instrumental pause his mouth closes, a soft smile appears and glowing golden-violet particles drift upward around him and his jacket and hoodie cords lift gently, as if he were weightless. When the vocal returns he sings again with a joyful, bright expression, head tilted up. Camera: slow dolly in, then a gentle tilt up. Single continuous shot. Audio: the provided song, melodic vocal "ay-ay-ay… let me fly", soft wind.
 ```
 
 ## 10 · 90-100 s · "…לראות את הטוב" then instrumental
