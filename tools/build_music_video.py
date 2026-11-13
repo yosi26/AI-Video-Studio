@@ -23,6 +23,7 @@ Examples:
 """
 import argparse
 import json
+import math
 import re
 import shutil
 import subprocess
@@ -131,10 +132,11 @@ def main():
     print("Reading song and locating segments (audio match)...")
     song = decode_mono(Path(args.song))
     print(f"Song length: {len(song) / SR:.2f}s")
+    search = np.concatenate([song, np.zeros(2 * SR)])  # a last clip may overhang the end of the song slightly
     for info in infos:
         if not info["has_audio"]:
             sys.exit(f"{info['path'].name} has no audio, so it cannot be located in the song.")
-        start, corr, second = locate(song, decode_mono(info["path"]))
+        start, corr, second = locate(search, decode_mono(info["path"]))
         if corr < args.min_corr:
             sys.exit(f"Could not find {info['path'].name} in the song (match {corr:.2f}). Is it from this song?")
         info["start"], info["corr"], info["second"] = start, corr, second
@@ -169,6 +171,11 @@ def main():
         pos += info["frames"] - skip
     total_frames = pos
     total_s = total_frames / fps
+    song_end = len(song) / SR
+    if t0 + total_s > song_end + 1e-3:  # last clip runs past the end of the song -> cut it there
+        print(f"  note: the video would run {t0 + total_s - song_end:.2f}s past the end of the song; cutting it at the song's end.")
+        total_s = song_end - t0
+        total_frames = math.ceil(round(total_s * fps, 6))
 
     print(f"\nOutput: {W}x{H} @ {fps:g} fps, {total_s:.2f}s, song {t0:.2f}s -> {t0 + total_s:.2f}s")
     print(" #  file                           song start   frames  corr   note")
