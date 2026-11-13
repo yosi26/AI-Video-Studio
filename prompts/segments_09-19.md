@@ -13,16 +13,18 @@ alignment of the song.
 - In audio-to-video the model builds the lip-sync around the audio you supply and the audio sets the clip length.
 - Sources of these rules: LTX/Runware/fal prompting guides (summaries; the official pages could not be opened from this environment).
 
-## Settings per clip
+## Settings per clip (all clips use Audio -> Video, as segments 1-8 did)
 
-| Clips | Console page | Inputs |
-|---|---|---|
-| 9, 10, 11, 12, 13, 14, 15, 17 | Audio -> Video | audio = `segment_NN.mp3`, start image = that clip's reference, the prompt below |
-| 16, 18 | Image -> Video | First frame = reference, Duration 10 s |
-| 19 | Image -> Video | First frame = reference, Last frame = `loop_end_frame_seg1_first.jpg`, Duration 8 s (the build tool cuts it at the end of the song) |
+Page: **Audio -> Video**. Fields: Audio (max 32 MB / 20 s, the video length follows the audio) · First frame · Last frame
+(optional) · Prompt.
 
-Model LTX-2.5 Fast, 16:9, 24 fps, Camera Motion None. Resolution 1080p (about $0.13/s; 4K is about $0.30/s).
-Generate Audio can be Off in Image -> Video (the final soundtrack is the original song).
+- **Audio** = `segment_NN.mp3` of that clip (the window of the song).
+- **First frame** = that clip's reference image.
+- **Last frame** = leave empty, except clip 19 (use `loop_end_frame_seg1_first.jpg`).
+- **Prompt** = the text of the clip below.
+- Model LTX-2.5 Fast, 16:9, 24 fps, Camera Motion None, resolution 1080p (about $0.13/s; 4K is about $0.30/s).
+- Clips 16, 18 and 19 have no singing; they still use Audio -> Video so the movement follows the music.
+  Clip 19's audio is 7.6 s, so the video is exactly as long as the rest of the song (no trimming needed).
 
 Song map: intro 0-13 instrumental | whispered intro 13-33 | instrumental 33-52 | verse 1 rap 52.6-65.7 |
 chant 66.5-78.4 | chorus 81-91.6 | instrumental 91.6-108.5 | verse 2 108.5-115.6 | build-up 115.8-122.1 |
@@ -86,7 +88,7 @@ He sings with full emotion, lips matching the vocal, his arms rising wide toward
 He breathes slowly with his eyes closed, soft particles of light floating around him. Once, at about two seconds, he whispers a single word, "light", barely moving his lips. The moon rises slowly over the domes and violet mist drifts by. Camera: very slow orbit around him. Single continuous shot. Audio: the provided song, one whispered word, soft echoing pads, quiet wind.
 ```
 
-## 16 · 150-160 s · Instrumental — Image -> Video
+## 16 · 150-160 s · Instrumental
 **Reference image (first frame):** `loop_end_frame_seg1_first.jpg` (Jerusalem at night, full moon, violet mist, arch with lantern at the left). No man.
 **Prompt:**
 ```
@@ -101,14 +103,14 @@ A slow cinematic glide forward over Jerusalem at night, no people. Violet mist d
 He stands silent, looking into the camera with a warm calm smile, lantern light flickering on his face. He slowly reaches his open hand toward the camera in a welcoming gesture. At the whispered vocal he softly says "I'm here" in two parts, lips matching the vocal: "I'm he—", a pause, then "—re…", slow and breathy, and finishes with a gentle smile. Camera: static with a very slow dolly in. Single continuous shot. Audio: the provided song, ethereal echo and the whispered vocal.
 ```
 
-## 18 · 170-180 s · Instrumental — Image -> Video
+## 18 · 170-180 s · Instrumental
 **Reference image:** the man in the lantern-lit arch, side view, hand just lowered, head turning away toward the alley, mouth closed.
 **Prompt:**
 ```
 He lowers his hand, turns fully and walks slowly away through the glowing archway into the alley, lantern light flickering on the stones. The camera slowly pulls back and rises to reveal the Jerusalem skyline under the full moon, violet mist swirling and city lights twinkling, while his figure becomes small and fades into the warm glow. Single continuous shot. Audio: instrumental music only, no singing.
 ```
 
-## 19 · 180-187.6 s · Final shot, closes the loop — Image -> Video, First frame + Last frame
+## 19 · 180-187.6 s (7.6 s audio) · Final shot, closes the loop — First frame + Last frame
 **First frame:** a slightly wider, different-angle view of Jerusalem at night with a full moon and violet mist, same style as the opening shot. No man.
 **Last frame:** `loop_end_frame_seg1_first.jpg`.
 **Prompt:**
