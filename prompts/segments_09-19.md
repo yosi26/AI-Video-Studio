@@ -42,10 +42,10 @@ He stands still for a moment, a light breeze moving his jacket. He opens his eye
 
 ## 10 · 90-100 s · "…לראות את הטוב" then instrumental
 **Vocal timing:** held note until 0.25 s · "לראות את הטוב" 0.27-1.64 s · then instrumental only.
-**Reference image:** the man on the same peak, low angle, face lifted to the sky, arms slightly open, mouth slightly open mid-note, golden particles floating around him.
+**First frame:** the LAST frame of the generated clip 9 (a close-up, head tilted back, mouth open mid-note) — saved as `clip10_first_frame.jpg`. It continues the held note, so no new reference image is needed.
 **Prompt:**
 ```
-He holds the last note and finishes the line "to see the good" with a gentle smile, then his mouth closes and he stays silent. His arms open wider and he rises slowly off the peak, floating upward, calm and peaceful. Camera: pulls back and cranes up into a wide aerial view of the endless sea of clouds glowing gold and violet, the first stars appearing in the deepening sky, until he becomes a small figure in the luminous sky. Single continuous shot. Audio: the provided song, one short sung line at the very start, then instrumental music only.
+He holds the last note with his head tilted back, then finishes the line "to see the good" with a gentle smile, and his mouth closes; he stays silent. The camera pulls back from the close-up to a medium shot, revealing his arms opening wide as he rises slowly off the peak and floats upward, calm and peaceful, his grey-and-white knitted kippah on his head. The camera keeps pulling back and cranes up into a wide aerial view of the endless sea of clouds glowing gold and violet, the first stars appearing in the deepening sky, until he becomes a small figure in the luminous sky. Single continuous shot. Audio: the provided song, one short sung line at the very start, then instrumental music only.
 ```
 
 ## 11 · 100-110 s · Instrumental, verse 2 begins at 8.5 s — "נופל וקם, שוב מתחיל"
